@@ -1,29 +1,15 @@
 package com.bridgelabz.lmsapi.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import javax.persistence.*;
-
-@Entity
-@Table
-public class DAOUser {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private long id;
-    @Column
+public class AuthenticationRequest {
     private String username;
-    @Column
-    @JsonIgnore
     private String password;
 
-    public long getId() {
-        return id;
+    public AuthenticationRequest() {
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public AuthenticationRequest(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
     public String getUsername() {
