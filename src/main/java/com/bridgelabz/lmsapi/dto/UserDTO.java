@@ -1,4 +1,4 @@
-package com.bridgelabz.lmsapi.model;
+package com.bridgelabz.lmsapi.dto;
 
 public class UserDTO {
 

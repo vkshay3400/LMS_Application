@@ -1,4 +1,4 @@
-package com.bridgelabz.lms;
+package com.bridgelabz.lmsapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
