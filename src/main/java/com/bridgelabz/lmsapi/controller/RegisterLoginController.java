@@ -17,6 +17,6 @@ public class RegisterLoginController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity<?> saveUser(@RequestBody UserDTO userDTO) throws Exception{
-        return ResponseEntity.ok(userDetailsService.save(userDTO));
+        return ResponseEntity.ok(userDetailsService.loadUserDetails(userDTO));
     }
 }

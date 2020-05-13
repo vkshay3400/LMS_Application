@@ -2,6 +2,7 @@ package com.bridgelabz.lmsapi.controller;
 
 import com.bridgelabz.lmsapi.model.AuthenticationRequest;
 import com.bridgelabz.lmsapi.model.AuthenticationResponse;
+import com.bridgelabz.lmsapi.dto.UserDTO;
 import com.bridgelabz.lmsapi.service.LoginUserDetailsService;
 import com.bridgelabz.lmsapi.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ public class LoginController {
 
     @Autowired
     private LoginUserDetailsService userDetailsService;
+
 
     @Autowired
     private JwtUtil jwtTokenUtil;
