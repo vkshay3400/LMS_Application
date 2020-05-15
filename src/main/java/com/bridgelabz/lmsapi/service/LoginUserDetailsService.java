@@ -40,4 +40,10 @@ public class LoginUserDetailsService implements UserDetailsService {
         userRepository.save(daoUser);
         return daoUser;
     }
+
+    public DAOUser changePassword(UserDTO userDTO) {
+        DAOUser daoUser = userRepository.findByEmail(userDTO.getEmail());
+        daoUser.setPassword(userDTO.getPassword());
+        return userRepository.save(daoUser);
+    }
 }
