@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<DAOUser, Integer> {
     @Query("select u from user u where u.first_name = ?1")
     DAOUser findByFirst_name(String first_name);
+    DAOUser findByEmail(String email);
 }
