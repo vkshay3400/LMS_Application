@@ -3,11 +3,14 @@ package com.bridgelabz.lmsapi.controller;
 import com.bridgelabz.lmsapi.dto.UserDTO;
 import com.bridgelabz.lmsapi.model.AuthenticationRequest;
 import com.bridgelabz.lmsapi.model.AuthenticationResponse;
-import com.bridgelabz.lmsapi.service.LoginUserDetailsService;
-import com.bridgelabz.lmsapi.service.Notification;
+import com.bridgelabz.lmsapi.model.DAOUser;
+import com.bridgelabz.lmsapi.repository.UserRepository;
+import com.bridgelabz.lmsapi.service.UserServiceImpl;
 import com.bridgelabz.lmsapi.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,22 +22,19 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     @Autowired
+    private JavaMailSender javaMailSender;
+
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private LoginUserDetailsService userDetailsService;
+    private UserServiceImpl userDetailsService;
 
     @Autowired
-    private Notification notification;
+    UserRepository userRepository;
 
     @Autowired
-    private JwtUtil jwtTokenUtil;
-
-    @Autowired
-    JwtUtil jwtUtil;
-
-    @Autowired
-    LoginUserDetailsService service;
+    JwtUtil util;
 
     @RequestMapping("/login")
     public String hello() {
@@ -53,10 +53,9 @@ public class UserController {
         }
         final UserDetails userDetails = userDetailsService
                 .loadUserByUsername(authenticationRequest.getUsername());
-        final String jwt = jwtTokenUtil.generateToken(userDetails);
+        final String jwt = util.generateToken(userDetails);
 
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
-
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
@@ -71,7 +70,17 @@ public class UserController {
         userDTO.setLast_name(userDTO.getLast_name());
 
         try {
-            notification.sendNotification(userDTO);
+            DAOUser user = userRepository.findByEmail(userDTO.getEmail());
+            SimpleMailMessage mail = new SimpleMailMessage();
+            mail.setTo(userDTO.getEmail());
+            mail.setFrom("${gmail.username}");
+            mail.setSubject("Regarding reset password ");
+            mail.setText("Hello " + userDTO.getFirst_name() + " please reset your password using the link and token " +
+                    "Link: http://localhost:8080/change-password " +
+                    "Use your email and a new password and use the token " +
+                    "token: " + util.getToken(user.getId()));
+
+            javaMailSender.send(mail);
         } catch (Exception e) {
             return ("Mail Exception");
         }
@@ -80,8 +89,8 @@ public class UserController {
 
     @PutMapping("/change-password")
     public String signUpSuccess(@RequestBody UserDTO userDTO, @RequestParam(value = "token") String token) {
-        String id = jwtUtil.extractUserName(token);
-        service.changePassword(userDTO);
+        String id = util.extractUserName(token);
+        userDetailsService.changePassword(userDTO);
         return ("Changed password successfully.");
     }
 }

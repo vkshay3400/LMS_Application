@@ -1,6 +1,6 @@
 package com.bridgelabz.lmsapi.filters;
 
-import com.bridgelabz.lmsapi.service.LoginUserDetailsService;
+import com.bridgelabz.lmsapi.service.UserServiceImpl;
 import com.bridgelabz.lmsapi.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +20,7 @@ import java.io.IOException;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
-    private LoginUserDetailsService userDetailsService;
+    private UserServiceImpl userDetailsService;
 
     @Autowired
     private JwtUtil jwtUtil;

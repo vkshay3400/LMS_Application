@@ -1,7 +1,7 @@
 package com.bridgelabz.lmsapi.configuration;
 
 import com.bridgelabz.lmsapi.filters.JwtRequestFilter;
-import com.bridgelabz.lmsapi.service.LoginUserDetailsService;
+import com.bridgelabz.lmsapi.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,14 +18,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfigure extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private LoginUserDetailsService loginUserDetailsService;
+    private UserServiceImpl userService;
 
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(loginUserDetailsService);
+        auth.userDetailsService(userService);
     }
 
     @Override
