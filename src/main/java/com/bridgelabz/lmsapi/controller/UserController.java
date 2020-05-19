@@ -37,7 +37,7 @@ public class UserController {
     JwtUtil util;
 
     @RequestMapping("/login")
-    public String hello() {
+    public String login() {
         return "Login Successful";
     }
 
@@ -64,7 +64,7 @@ public class UserController {
     }
 
     @PostMapping("/send-mail")
-    public String signUpSuccess(@RequestBody UserDTO userDTO) {
+    public String sendMail(@RequestBody UserDTO userDTO) {
         userDTO.setEmail(userDTO.getEmail());
         userDTO.setFirst_name(userDTO.getFirst_name());
         userDTO.setLast_name(userDTO.getLast_name());
@@ -88,7 +88,7 @@ public class UserController {
     }
 
     @PutMapping("/change-password")
-    public String signUpSuccess(@RequestBody UserDTO userDTO, @RequestParam(value = "token") String token) {
+    public String changePassword(@RequestBody UserDTO userDTO, @RequestParam(value = "token") String token) {
         String id = util.extractUserName(token);
         userDetailsService.changePassword(userDTO);
         return ("Changed password successfully.");
