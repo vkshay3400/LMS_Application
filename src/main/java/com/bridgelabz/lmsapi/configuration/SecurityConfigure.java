@@ -33,7 +33,7 @@ public class SecurityConfigure extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests().antMatchers("/user/authenticate", "/user/register","/user/send-mail",
                 "/user/change-password","/hired/import-hired-list","/hired/all-hired-candidates",
-                        "/hired/value={name}" ).permitAll()
+                        "/hired/hired-candidate-details" ).permitAll()
                 .anyRequest().authenticated()
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

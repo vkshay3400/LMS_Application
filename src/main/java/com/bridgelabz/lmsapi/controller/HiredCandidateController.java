@@ -28,8 +28,8 @@ public class HiredCandidateController {
         return service.getList();
     }
 
-    @GetMapping(value="/{name}")
-    public DAOCandidate getCandidateDetails(@PathVariable String name){
+    @GetMapping("/hired-candidate-details")
+    public DAOCandidate getCandidateDetails(@RequestParam(value ="name") String name){
         return service.findByFirst_Name(name);
     }
 }
