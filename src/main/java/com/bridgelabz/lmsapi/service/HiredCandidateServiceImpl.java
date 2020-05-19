@@ -1,6 +1,6 @@
 package com.bridgelabz.lmsapi.service;
 
-import com.bridgelabz.lmsapi.dto.HiredCandidate;
+import com.bridgelabz.lmsapi.dto.HiredCandidateDTO;
 import com.bridgelabz.lmsapi.model.DAOCandidate;
 import com.bridgelabz.lmsapi.repository.HiredCandidateRepository;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -20,7 +20,7 @@ import java.util.List;
 @Service
 public class HiredCandidateServiceImpl implements HiredCandidateService {
 
-    HiredCandidate hiredCandidate = new HiredCandidate();
+    HiredCandidateDTO hiredCandidateDTO = new HiredCandidateDTO();
 
     @Autowired
     private HiredCandidateRepository hiredCandidateRepository;
@@ -33,13 +33,13 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
         List candidateList = new ArrayList();
         try (FileInputStream fileInputStream = new FileInputStream(filePath)) {
 
-            //Create Workbook instance holding reference to .xlsx fileInputStream
+            // Create Workbook instance holding reference to .xlsx fileInputStream
             XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
 
-            //Get first/desired sheet from the workbook
+            // Get first/desired sheet from the workbook
             XSSFSheet sheet = workbook.getSheetAt(0);
 
-            //Iterate through each rows one by one
+            // Iterate through each rows one by one
             Iterator rowIterator = sheet.iterator();
             while (rowIterator.hasNext()) {
                 XSSFRow row = (XSSFRow) rowIterator.next();
@@ -58,60 +58,62 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
         return candidateList;
     }
 
+    // To save details in database
     public void saveCandidateDetails(List candidateList) {
         XSSFCell cell;
         for (int i = 1; i < candidateList.size(); i++) {
             int j = 0;
             List list = (List) candidateList.get(i);
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setId((long) cell.getNumericCellValue());
+            hiredCandidateDTO.setId((long) cell.getNumericCellValue());
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setFirst_name(cell.getStringCellValue());
+            hiredCandidateDTO.setFirst_name(cell.getStringCellValue());
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setMiddle_name(cell.getStringCellValue());
+            hiredCandidateDTO.setMiddle_name(cell.getStringCellValue());
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setLast_name(cell.getStringCellValue());
+            hiredCandidateDTO.setLast_name(cell.getStringCellValue());
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setEmail(cell.getStringCellValue());
+            hiredCandidateDTO.setEmail(cell.getStringCellValue());
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setHired_city(cell.getStringCellValue());
+            hiredCandidateDTO.setHired_city(cell.getStringCellValue());
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setDegree(cell.getStringCellValue());
+            hiredCandidateDTO.setDegree(cell.getStringCellValue());
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setHired_date(cell.getDateCellValue());
+            hiredCandidateDTO.setHired_date(cell.getDateCellValue());
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setMobile_number((long) cell.getNumericCellValue());
+            hiredCandidateDTO.setMobile_number((long) cell.getNumericCellValue());
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setPermanent_pincode((long) cell.getNumericCellValue());
+            hiredCandidateDTO.setPermanent_pincode((long) cell.getNumericCellValue());
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setHired_lab(cell.getStringCellValue());
+            hiredCandidateDTO.setHired_lab(cell.getStringCellValue());
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setAttitude(cell.getStringCellValue());
+            hiredCandidateDTO.setAttitude(cell.getStringCellValue());
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setCommunication_remark(cell.getStringCellValue());
+            hiredCandidateDTO.setCommunication_remark(cell.getStringCellValue());
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setKnowledge_remark(cell.getStringCellValue());
+            hiredCandidateDTO.setKnowledge_remark(cell.getStringCellValue());
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setAggregate_remark(cell.getStringCellValue());
+            hiredCandidateDTO.setAggregate_remark(cell.getStringCellValue());
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setStatus(cell.getStringCellValue());
+            hiredCandidateDTO.setStatus(cell.getStringCellValue());
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setCreator_stamp(cell.getDateCellValue());
+            hiredCandidateDTO.setCreator_stamp(cell.getDateCellValue());
             cell = (XSSFCell) list.get(j++);
-            hiredCandidate.setCreator_user(cell.getStringCellValue());
+            hiredCandidateDTO.setCreator_user(cell.getStringCellValue());
 
-            DAOCandidate daoCandidate = modelMapper.map(hiredCandidate, DAOCandidate.class);
+            DAOCandidate daoCandidate = modelMapper.map(hiredCandidateDTO, DAOCandidate.class);
             hiredCandidateRepository.save(daoCandidate);
         }
     }
 
+    // To get list of hired candidate
     public List getList() {
         return hiredCandidateRepository.findAll();
     }
 
+    // To find hired candidate by name
     public DAOCandidate findByFirst_Name(String first_name) {
         DAOCandidate daoCandidate = hiredCandidateRepository.findByFirst_name(first_name);
         return daoCandidate;
     }
-
 }

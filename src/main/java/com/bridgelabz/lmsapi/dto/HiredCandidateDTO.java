@@ -2,7 +2,7 @@ package com.bridgelabz.lmsapi.dto;
 
 import java.util.Date;
 
-public class HiredCandidate {
+public class HiredCandidateDTO {
     private long id;
     private String first_name;
     private String middle_name;
