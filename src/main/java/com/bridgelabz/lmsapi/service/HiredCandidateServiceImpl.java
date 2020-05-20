@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class HiredCandidateServiceImpl implements HiredCandidateService {
@@ -59,6 +60,7 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
     }
 
     // Method to save details in database
+    @Override
     public void saveCandidateDetails(List candidateList) throws IOException{
         XSSFCell cell;
         for (int index1 = 1; index1 < candidateList.size(); index1++) {
@@ -67,53 +69,54 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
             cell = (XSSFCell) list.get(index2++);
             hiredCandidateDTO.setId((long) cell.getNumericCellValue());
             cell = (XSSFCell) list.get(index2++);
-            hiredCandidateDTO.setFirst_name(cell.getStringCellValue());
+            hiredCandidateDTO.setFirstName(cell.getStringCellValue());
             cell = (XSSFCell) list.get(index2++);
-            hiredCandidateDTO.setMiddle_name(cell.getStringCellValue());
+            hiredCandidateDTO.setMiddleName(cell.getStringCellValue());
             cell = (XSSFCell) list.get(index2++);
-            hiredCandidateDTO.setLast_name(cell.getStringCellValue());
+            hiredCandidateDTO.setLastName(cell.getStringCellValue());
             cell = (XSSFCell) list.get(index2++);
             hiredCandidateDTO.setEmail(cell.getStringCellValue());
             cell = (XSSFCell) list.get(index2++);
-            hiredCandidateDTO.setHired_city(cell.getStringCellValue());
+            hiredCandidateDTO.setHiredCity(cell.getStringCellValue());
             cell = (XSSFCell) list.get(index2++);
             hiredCandidateDTO.setDegree(cell.getStringCellValue());
             cell = (XSSFCell) list.get(index2++);
-            hiredCandidateDTO.setHired_date(cell.getDateCellValue());
+            hiredCandidateDTO.setHiredDate(cell.getDateCellValue());
             cell = (XSSFCell) list.get(index2++);
-            hiredCandidateDTO.setMobile_number((long) cell.getNumericCellValue());
+            hiredCandidateDTO.setMobileNumber((long) cell.getNumericCellValue());
             cell = (XSSFCell) list.get(index2++);
-            hiredCandidateDTO.setPermanent_pincode((long) cell.getNumericCellValue());
+            hiredCandidateDTO.setPermanentPincode((long) cell.getNumericCellValue());
             cell = (XSSFCell) list.get(index2++);
-            hiredCandidateDTO.setHired_lab(cell.getStringCellValue());
+            hiredCandidateDTO.setHiredLab(cell.getStringCellValue());
             cell = (XSSFCell) list.get(index2++);
             hiredCandidateDTO.setAttitude(cell.getStringCellValue());
             cell = (XSSFCell) list.get(index2++);
-            hiredCandidateDTO.setCommunication_remark(cell.getStringCellValue());
+            hiredCandidateDTO.setCommunicationRemark(cell.getStringCellValue());
             cell = (XSSFCell) list.get(index2++);
-            hiredCandidateDTO.setKnowledge_remark(cell.getStringCellValue());
+            hiredCandidateDTO.setKnowledgeRemark(cell.getStringCellValue());
             cell = (XSSFCell) list.get(index2++);
-            hiredCandidateDTO.setAggregate_remark(cell.getStringCellValue());
+            hiredCandidateDTO.setAggregateRemark(cell.getStringCellValue());
             cell = (XSSFCell) list.get(index2++);
             hiredCandidateDTO.setStatus(cell.getStringCellValue());
             cell = (XSSFCell) list.get(index2++);
-            hiredCandidateDTO.setCreator_stamp(cell.getDateCellValue());
+            hiredCandidateDTO.setCreatorStamp(cell.getDateCellValue());
             cell = (XSSFCell) list.get(index2++);
-            hiredCandidateDTO.setCreator_user(cell.getStringCellValue());
+            hiredCandidateDTO.setCreatorUser(cell.getStringCellValue());
 
             DAOCandidate daoCandidate = modelMapper.map(hiredCandidateDTO, DAOCandidate.class);
             hiredCandidateRepository.save(daoCandidate);
         }
     }
 
-    // Method to get list of hired candidate
+    // Method to get list of hired candidates
+    @Override
     public List getList() {
         return hiredCandidateRepository.findAll();
     }
 
-    // Method to find hired candidate by name
-    public DAOCandidate findByFirst_Name(String first_name) {
-        DAOCandidate daoCandidate = hiredCandidateRepository.findByFirst_name(first_name);
-        return daoCandidate;
-    }
+    // Method to get profile of hired candidate
+//    @Override
+//    public Optional<DAOCandidate> findByFirstName(String name) {
+////        return hiredCandidateRepository.findByFirstName(name);
+//    }
 }
