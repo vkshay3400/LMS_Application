@@ -1,13 +1,12 @@
 package com.bridgelabz.lmsapi.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public class AuthenticationResponse {
-    private final String jwt;
 
-    public AuthenticationResponse(String jwt){
-        this.jwt = jwt;
-    }
+    private String jwt;
 
-    public String getJwt() {
-        return jwt;
-    }
 }
