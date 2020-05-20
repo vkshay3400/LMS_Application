@@ -21,6 +21,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Autowired
     UserRepository userRepository;
 
+    // Method to load user by name
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         DAOUser user = userRepository.findByFirst_name(userName);
@@ -32,6 +33,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 new ArrayList<>());
     }
 
+    // Method to load user details
     @Override
     public DAOUser loadUserDetails(UserDTO userDTO) {
         DAOUser daoUser = (DAOUser) modelMapper.map(userDTO, DAOUser.class);
@@ -40,6 +42,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return daoUser;
     }
 
+    // Method to change password
     @Override
     public DAOUser changePassword(UserDTO userDTO) {
         DAOUser daoUser = userRepository.findByEmail(userDTO.getEmail());
@@ -47,4 +50,3 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.save(daoUser);
     }
 }
-
