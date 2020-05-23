@@ -2,16 +2,14 @@ package com.bridgelabz.lmsapi.model;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @Table(name = "hired_candidate")
 @Entity(name = "hired_candidate")
-public class DAOCandidate implements Serializable {
+public class DAOCandidate implements Serializable{
 
     @Id
     private long id;
