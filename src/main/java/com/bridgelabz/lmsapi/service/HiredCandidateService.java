@@ -1,18 +1,16 @@
 package com.bridgelabz.lmsapi.service;
 
-import com.bridgelabz.lmsapi.model.DAOCandidate;
+import com.bridgelabz.lmsapi.model.CandidateDao;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 public interface HiredCandidateService {
-    List getHiredCandidate(String filepath) throws IOException;
 
-    void saveCandidateDetails(List candidateList) throws IOException;
-
+    void getHiredCandidate(MultipartFile filepath) throws IOException;
     List getList();
+    Optional<CandidateDao> findById(Long id);
 
-    //    public DAOCandidate findByFirstName(String name);
-//    Optional<DAOCandidate> findByFirstName(String name);
 }

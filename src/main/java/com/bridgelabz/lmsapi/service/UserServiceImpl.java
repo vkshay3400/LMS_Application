@@ -1,9 +1,9 @@
 package com.bridgelabz.lmsapi.service;
 
-import com.bridgelabz.lmsapi.dto.Response;
-import com.bridgelabz.lmsapi.dto.UserDTO;
+import com.bridgelabz.lmsapi.dto.MessageResponse;
+import com.bridgelabz.lmsapi.dto.UserDto;
 import com.bridgelabz.lmsapi.model.AuthenticationRequest;
-import com.bridgelabz.lmsapi.model.DAOUser;
+import com.bridgelabz.lmsapi.model.UserDao;
 import com.bridgelabz.lmsapi.repository.UserRepository;
 import com.bridgelabz.lmsapi.util.JwtUtil;
 import org.modelmapper.ModelMapper;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
     @Autowired
-    public ModelMapper modelMapper;
+    private ModelMapper modelMapper;
 
     @Autowired
     private JavaMailSender javaMailSender;
@@ -33,15 +33,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    JwtUtil util;
+    private JwtUtil util;
 
     // Method to load user by name
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        DAOUser user = userRepository.findByFirstName(userName);
+        UserDao user = userRepository.findByFirstName(userName);
 
         if (user == null) {
             throw new UsernameNotFoundException("User with username: " + userName + " not found ");
@@ -52,21 +52,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     // Method to load user details
     @Override
-    public DAOUser loadUserDetails(UserDTO userDTO) {
-        DAOUser daoUser = (DAOUser) modelMapper.map(userDTO, DAOUser.class);
-        daoUser.setCreatorStamp(LocalDateTime.now());
-        userRepository.save(daoUser);
-        return daoUser;
+    public UserDao registerUser(UserDto userDTO) {
+        UserDao userDao = (UserDao) modelMapper.map(userDTO, UserDao.class);
+        userDao.setCreatorStamp(LocalDateTime.now());
+        userRepository.save(userDao);
+        return userDao;
     }
 
     // Method to change password
     @Override
-    public DAOUser changePassword(UserDTO userDTO) {
-        DAOUser daoUser = userRepository.findByEmail(userDTO.getEmail());
-        daoUser.setPassword(userDTO.getPassword());
-        return userRepository.save(daoUser);
+    public UserDao changePassword(UserDto userDTO) {
+        UserDao userDao = userRepository.findByEmail(userDTO.getEmail());
+        userDao.setPassword(userDTO.getPassword());
+        return userRepository.save(userDao);
     }
 
+    // Method to get token
     @Override
     public String getToken(AuthenticationRequest authenticationRequest) throws Exception {
         try {
@@ -80,20 +81,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return jwt;
     }
 
+    // Method to get token by username
     @Override
     public String getId(String token) {
         String id = util.extractUserName(token);
         return id;
     }
 
+    // Method to send mail on the user's mail
     @Override
-    public Response getMail(UserDTO userDTO) {
+    public MessageResponse getMail(UserDto userDTO) {
         userDTO.setEmail(userDTO.getEmail());
         userDTO.setFirstName(userDTO.getFirstName());
         userDTO.setLastName(userDTO.getLastName());
 
         try {
-            DAOUser user = userRepository.findByEmail(userDTO.getEmail());
+            UserDao user = userRepository.findByEmail(userDTO.getEmail());
             SimpleMailMessage mail = new SimpleMailMessage();
             mail.setTo(userDTO.getEmail());
             mail.setFrom("${gmail.username}");
@@ -103,9 +106,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     "token: " + util.getToken(user.getId()));
 
             javaMailSender.send(mail);
-            return new Response(200, "Mail sent successfully");
+            return new MessageResponse(200, "Mail sent successfully");
         } catch (Exception e) {
-            return new Response(100, "Mail Exception");
+            return new MessageResponse(100, "Mail Exception");
         }
+    }
+
+    // Method to check user
+    @Override
+    public boolean checkUser(UserDto userDTO){
+        userDTO.getVerified();
+        return true;
     }
 }

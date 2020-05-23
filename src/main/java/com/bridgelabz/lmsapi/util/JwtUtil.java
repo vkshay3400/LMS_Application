@@ -1,6 +1,5 @@
 package com.bridgelabz.lmsapi.util;
 
-import com.bridgelabz.lmsapi.model.DAOUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

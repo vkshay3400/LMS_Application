@@ -1,10 +1,12 @@
 package com.bridgelabz.lmsapi.repository;
 
-import com.bridgelabz.lmsapi.model.DAOCandidate;
+import com.bridgelabz.lmsapi.model.CandidateDao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface HiredCandidateRepository extends JpaRepository<DAOCandidate, Integer> {
-    @Query("select u from user u where u.first_name = ?1")
-    DAOCandidate findByFirst_name(String first_name);
+import java.util.Optional;
+
+public interface HiredCandidateRepository extends JpaRepository<CandidateDao, Integer> {
+    @Query("select h from hired_candidate h where h.firstName = ?1")
+    Optional<CandidateDao> findByFirstName(String firstName);
 }

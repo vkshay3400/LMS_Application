@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 @Table(name = "hired_candidate")
 @Entity(name = "hired_candidate")
-public class DAOCandidate implements Serializable{
+public class CandidateDao implements Serializable{
 
     @Id
     private long id;

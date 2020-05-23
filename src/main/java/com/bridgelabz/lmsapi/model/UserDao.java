@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @Table(name = "user")
 @Entity(name = "user")
-public class DAOUser implements Serializable {
+public class UserDao implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

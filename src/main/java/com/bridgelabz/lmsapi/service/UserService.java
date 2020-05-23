@@ -1,22 +1,20 @@
 package com.bridgelabz.lmsapi.service;
 
-import com.bridgelabz.lmsapi.dto.Response;
-import com.bridgelabz.lmsapi.dto.UserDTO;
+import com.bridgelabz.lmsapi.dto.MessageResponse;
+import com.bridgelabz.lmsapi.dto.UserDto;
 import com.bridgelabz.lmsapi.model.AuthenticationRequest;
-import com.bridgelabz.lmsapi.model.DAOUser;
+import com.bridgelabz.lmsapi.model.UserDao;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public interface UserService {
+
     UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException;
-
-    DAOUser loadUserDetails(UserDTO userDTO);
-
-    DAOUser changePassword(UserDTO userDTO);
-
+    UserDao registerUser(UserDto userDTO);
+    UserDao changePassword(UserDto userDTO);
     String getToken(AuthenticationRequest authenticationRequest) throws Exception;
-
     String getId(String token);
+    MessageResponse getMail(UserDto userDTO);
+    boolean checkUser(UserDto userDTO);
 
-    Response getMail(UserDTO userDTO);
 }
