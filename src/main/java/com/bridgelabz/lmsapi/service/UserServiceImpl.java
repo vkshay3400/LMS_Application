@@ -1,6 +1,5 @@
 package com.bridgelabz.lmsapi.service;
 
-import com.bridgelabz.lmsapi.dto.MessageResponse;
 import com.bridgelabz.lmsapi.dto.UserDto;
 import com.bridgelabz.lmsapi.model.AuthenticationRequest;
 import com.bridgelabz.lmsapi.model.UserDao;
@@ -90,7 +89,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     // Method to send mail on the user's mail
     @Override
-    public MessageResponse getMail(UserDto userDTO) {
+    public String getMail(UserDto userDTO) {
         userDTO.setEmail(userDTO.getEmail());
         userDTO.setFirstName(userDTO.getFirstName());
         userDTO.setLastName(userDTO.getLastName());
@@ -106,9 +105,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     "token: " + util.getToken(user.getId()));
 
             javaMailSender.send(mail);
-            return new MessageResponse(200, "Mail sent successfully");
+            return new String("Mail sent successfully");
         } catch (Exception e) {
-            return new MessageResponse(100, "Mail Exception");
+            return new String("Mail Exception");
         }
     }
 

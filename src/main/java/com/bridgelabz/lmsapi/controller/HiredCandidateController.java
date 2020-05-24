@@ -13,27 +13,28 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/hired")
+@RequestMapping(value = "/hired")
 public class HiredCandidateController {
 
     @Autowired
     private HiredCandidateService service;
 
     // API to put in db
-    @PostMapping("/importhiredlist")
+    @PostMapping(value = "/importhiredlist")
     public ResponseEntity<String > importList(@RequestParam("file") MultipartFile file) throws IOException {
-        service.getHiredCandidate(file);
+        List getList = service.getHiredCandidate(file);
+        service.saveCandidateDetails(getList);
         return new ResponseEntity<>( "Imported Successfully", HttpStatus.CREATED);
     }
 
     // API to get list
-    @GetMapping("/allhiredcandidates")
+    @GetMapping(value = "/allhiredcandidates")
     public ResponseEntity<List> getAllCandidatesDetails() {
         return new ResponseEntity<>( service.getList(),HttpStatus.FOUND);
     }
 
     // API to get candidate profile
-    @GetMapping("/hiredcandidatedetails")
+    @GetMapping(value = "/hiredcandidatedetails")
     public ResponseEntity<Optional<CandidateDao>> getCandidateDetails(@RequestParam (value = "id") Long id) throws IOException{
         return new ResponseEntity<>(service.findById(id),HttpStatus.FOUND);
     }

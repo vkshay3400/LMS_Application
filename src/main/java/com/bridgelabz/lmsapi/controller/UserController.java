@@ -1,6 +1,5 @@
 package com.bridgelabz.lmsapi.controller;
 
-import com.bridgelabz.lmsapi.dto.MessageResponse;
 import com.bridgelabz.lmsapi.dto.UserDto;
 import com.bridgelabz.lmsapi.model.AuthenticationRequest;
 import com.bridgelabz.lmsapi.model.AuthenticationResponse;
@@ -12,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping(value = "/user")
 public class UserController {
 
     @Autowired
@@ -33,7 +32,7 @@ public class UserController {
     }
 
     // API for login user
-    @GetMapping("/login")
+    @GetMapping(value = "/login")
     public ResponseEntity<String> login(@RequestBody UserDto userDto, @RequestParam (value = "id") Long id) {
         if(service.checkUser(userDto)) {
             return new ResponseEntity<>("Login Successful", HttpStatus.OK);
@@ -42,13 +41,13 @@ public class UserController {
     }
 
     // API to send mail
-    @PostMapping("/sendmail")
-    public ResponseEntity<MessageResponse> sendMail(@RequestBody UserDto userDTO) {
+    @PostMapping(value = "/sendmail")
+    public ResponseEntity<String> sendMail(@RequestBody UserDto userDTO) {
         return new ResponseEntity<>(service.getMail(userDTO),HttpStatus.GONE);
     }
 
     // API to change password
-    @PutMapping("/changepassword")
+    @PutMapping(value = "/changepassword")
     public ResponseEntity<String> changePassword(@RequestBody UserDto userDto, @RequestParam(value = "token") String token) {
         service.getId(token);
         service.changePassword(userDto);

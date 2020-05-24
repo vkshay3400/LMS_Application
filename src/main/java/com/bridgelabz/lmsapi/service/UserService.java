@@ -1,6 +1,5 @@
 package com.bridgelabz.lmsapi.service;
 
-import com.bridgelabz.lmsapi.dto.MessageResponse;
 import com.bridgelabz.lmsapi.dto.UserDto;
 import com.bridgelabz.lmsapi.model.AuthenticationRequest;
 import com.bridgelabz.lmsapi.model.UserDao;
@@ -14,7 +13,7 @@ public interface UserService {
     UserDao changePassword(UserDto userDTO);
     String getToken(AuthenticationRequest authenticationRequest) throws Exception;
     String getId(String token);
-    MessageResponse getMail(UserDto userDTO);
+    String getMail(UserDto userDTO);
     boolean checkUser(UserDto userDTO);
 
 }
