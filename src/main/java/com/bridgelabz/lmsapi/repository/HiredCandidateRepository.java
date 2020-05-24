@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface HiredCandidateRepository extends JpaRepository<CandidateDao, Integer> {
+public interface HiredCandidateRepository extends JpaRepository<CandidateDao, Long> {
     @Query("select h from hired_candidate h where h.firstName = ?1")
     Optional<CandidateDao> findByFirstName(String firstName);
 }

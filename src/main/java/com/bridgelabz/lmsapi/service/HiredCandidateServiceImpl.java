@@ -22,18 +22,19 @@ import java.util.Optional;
 @Service
 public class HiredCandidateServiceImpl implements HiredCandidateService {
 
-    HiredCandidateDto hiredCandidateDTO = new HiredCandidateDto();
-
     @Autowired
     private HiredCandidateRepository hiredCandidateRepository;
 
     @Autowired
     private ModelMapper modelMapper;
 
+    HiredCandidateDto hiredCandidateDTO = new HiredCandidateDto();
+
     // Method to get details from excel sheet
     @Override
     public List getHiredCandidate(MultipartFile filePath) {
         List candidateList = new ArrayList();
+        boolean flag = true;
         try (InputStream fileInputStream = filePath.getInputStream()) {
             // Create Workbook instance holding reference to .xlsx fileInputStream
             XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
@@ -42,15 +43,19 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
             // Iterate through each rows one by one
             Iterator rowIterator = sheet.iterator();
             while (rowIterator.hasNext()) {
-                XSSFRow row = (XSSFRow) rowIterator.next();
-                // For each row, iterate through all the columns
-                Iterator cellIterators = row.cellIterator();
-                List data = new ArrayList();
-                while (cellIterators.hasNext()) {
-                    XSSFCell cell = (XSSFCell) cellIterators.next();
-                    data.add(cell);
-                    candidateList.add(data);
+                    XSSFRow row = (XSSFRow) rowIterator.next();
+                    // For each row, iterate through all the columns
+                    Iterator cellIterators = row.cellIterator();
+                    List data = new ArrayList();
+                if (!flag) {
+                    while (cellIterators.hasNext()) {
+
+                        XSSFCell cell = (XSSFCell) cellIterators.next();
+                        data.add(cell);
+                        candidateList.add(data);
+                    }
                 }
+                flag=false;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -62,9 +67,8 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
     @Override
     public void saveCandidateDetails(List<List<XSSFCell>> candidateList) throws IOException {
         XSSFCell cell;
-        boolean flag = true;
+
         for (List<XSSFCell> list : candidateList ){
-            if (!flag) {
                 int index = 0;
                 cell = (XSSFCell) list.get(index++);
                 hiredCandidateDTO.setId((long) cell.getNumericCellValue());
@@ -106,8 +110,6 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
                 CandidateDao candidateDao = modelMapper.map(hiredCandidateDTO, CandidateDao.class);
                 hiredCandidateRepository.save(candidateDao);
             }
-            flag = false;
-        }
     }
 
     // Method to get list of hired candidates
@@ -118,8 +120,8 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
 
     // Method to get profile of hired candidate
     @Override
-    public Optional<CandidateDao> findById(Long id) {
-        return hiredCandidateRepository.findById(Math.toIntExact(id));
+    public Optional<CandidateDao> findById(long id) {
+        return hiredCandidateRepository.findById(id);
     }
 
 }

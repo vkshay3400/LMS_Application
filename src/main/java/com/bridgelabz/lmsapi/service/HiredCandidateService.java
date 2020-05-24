@@ -16,6 +16,6 @@ public interface HiredCandidateService {
 
     List getList();
 
-    Optional<CandidateDao> findById(Long id);
+    Optional<CandidateDao> findById(long id);
 
 }
