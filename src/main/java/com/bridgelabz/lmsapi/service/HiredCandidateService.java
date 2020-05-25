@@ -21,4 +21,6 @@ public interface HiredCandidateService {
     String sendMail(HiredCandidateDto hiredCandidateDto);
 
     CandidateDao getOnboardStatus(HiredCandidateDto hiredCandidateDto, String choice);
+
+    String sendJobOffer(HiredCandidateDto hiredCandidateDto);
 }

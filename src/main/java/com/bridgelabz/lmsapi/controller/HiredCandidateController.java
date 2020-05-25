@@ -52,4 +52,10 @@ public class HiredCandidateController {
         return new ResponseEntity<>("Updated Status successsfully",HttpStatus.ACCEPTED);
     }
 
+    // API to update candidate status
+    @PostMapping(value = "/sendjoboffer")
+    public ResponseEntity<String> sendJobOffer(@RequestBody HiredCandidateDto hiredCandidateDto) {
+        String mailMessage = service.sendJobOffer(hiredCandidateDto);
+        return new ResponseEntity<>(mailMessage,HttpStatus.OK);
+    }
 }

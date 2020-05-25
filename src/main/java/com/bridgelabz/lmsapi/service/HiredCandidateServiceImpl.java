@@ -183,4 +183,23 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
         return hiredCandidateRepository.save(candidateDao);
     }
 
-}
+    // Method to send job offer
+    @Override
+    public String sendJobOffer(HiredCandidateDto hiredCandidateDto) {
+        CandidateDao candidateDao = hiredCandidateRepository.findById(hiredCandidateDto.getId())
+                .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
+        if (candidateDao.getStatus().matches("Accept")) {
+            candidateDao = hiredCandidateRepository.findByEmail(hiredCandidateDto.getEmail())
+                    .orElseThrow(() -> new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found"));
+            SimpleMailMessage mail = new SimpleMailMessage();
+            mail.setTo(hiredCandidateDto.getEmail());
+            mail.setFrom("${gmail.username}");
+            mail.setSubject("Regarding your job offer");
+            mail.setText("Hello " + hiredCandidateDto.getFirstName() + " Congratulations...!! " +
+                    "You are selected for the fellowship program... ");
+            javaMailSender.send(mail);
+            return new String("Mail sent successfully");
+        }
+        return new String("Candidate Status is not Accept");
+        }
+    }
