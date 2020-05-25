@@ -1,10 +1,10 @@
 package com.bridgelabz.lmsapi.service;
 
 import com.bridgelabz.lmsapi.dto.HiredCandidateDto;
-import com.bridgelabz.lmsapi.dto.UserDto;
 import com.bridgelabz.lmsapi.exception.LMSException;
 import com.bridgelabz.lmsapi.model.CandidateDao;
-import com.bridgelabz.lmsapi.model.UserDao;
+import com.bridgelabz.lmsapi.model.FellowshipDao;
+import com.bridgelabz.lmsapi.repository.FellowshipCandidateRepository;
 import com.bridgelabz.lmsapi.repository.HiredCandidateRepository;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -28,6 +28,9 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
 
     @Autowired
     private HiredCandidateRepository hiredCandidateRepository;
+
+    @Autowired
+    private FellowshipCandidateRepository fellowshipCandidateRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -198,8 +201,33 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
             mail.setText("Hello " + hiredCandidateDto.getFirstName() + " Congratulations...!! " +
                     "You are selected for the fellowship program... ");
             javaMailSender.send(mail);
+
+            // To save data in fellowship database table
+            FellowshipDao fellowshipDao = new FellowshipDao();
+
+            fellowshipDao.setFirstName(candidateDao.getFirstName());
+            fellowshipDao.setMiddleName(candidateDao.getMiddleName());
+            fellowshipDao.setLastName(candidateDao.getLastName());
+            fellowshipDao.setEmail(candidateDao.getEmail());
+            fellowshipDao.setHiredCity(candidateDao.getHiredCity());
+            fellowshipDao.setDegree(candidateDao.getDegree());
+            fellowshipDao.setHiredDate(candidateDao.getHiredDate());
+            fellowshipDao.setMobileNumber(candidateDao.getMobileNumber());
+            fellowshipDao.setPermanentPincode(candidateDao.getPermanentPincode());
+            fellowshipDao.setHiredLab(candidateDao.getHiredLab());
+            fellowshipDao.setAttitude(candidateDao.getAttitude());
+            fellowshipDao.setCommunicationRemark(candidateDao.getCommunicationRemark());
+            fellowshipDao.setKnowledgeRemark(candidateDao.getKnowledgeRemark());
+            fellowshipDao.setAggregateRemark(candidateDao.getAggregateRemark());
+            fellowshipDao.setCreatorStamp(candidateDao.getCreatorStamp());
+
+            if (fellowshipDao.equals(null))
+                throw new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found");
+
+            fellowshipCandidateRepository.save(fellowshipDao);
+
             return new String("Mail sent successfully");
         }
         return new String("Candidate Status is not Accept");
-        }
     }
+}
