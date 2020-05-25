@@ -6,7 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 public interface HiredCandidateService {
 
@@ -16,6 +15,6 @@ public interface HiredCandidateService {
 
     List getList();
 
-    Optional<CandidateDao> findById(long id);
+    CandidateDao findById(long id);
 
 }

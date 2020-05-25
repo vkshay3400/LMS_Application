@@ -35,7 +35,7 @@ public class HiredCandidateController {
 
     // API to get candidate profile
     @GetMapping(value = "/hiredcandidatedetails")
-    public ResponseEntity<Optional<CandidateDao>> getCandidateDetails(@RequestParam (value = "id") long id) throws IOException{
-        return new ResponseEntity<>(service.findById(id),HttpStatus.FOUND);
+    public ResponseEntity<CandidateDao> getCandidateDetails(@RequestParam (value = "id") long id) throws IOException{
+        return new ResponseEntity<CandidateDao>(service.findById(id),HttpStatus.FOUND);
     }
 }

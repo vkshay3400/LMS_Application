@@ -1,7 +1,9 @@
 package com.bridgelabz.lmsapi.service;
 
 import com.bridgelabz.lmsapi.dto.UserDto;
+import com.bridgelabz.lmsapi.exception.LMSException;
 import com.bridgelabz.lmsapi.model.AuthenticationRequest;
+import com.bridgelabz.lmsapi.model.LoginDto;
 import com.bridgelabz.lmsapi.model.UserDao;
 import com.bridgelabz.lmsapi.repository.UserRepository;
 import com.bridgelabz.lmsapi.util.JwtUtil;
@@ -40,19 +42,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     // Method to load user by name
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        UserDao user = userRepository.findByFirstName(userName);
-
-        if (user == null) {
-            throw new UsernameNotFoundException("User with username: " + userName + " not found ");
-        }
+        UserDao user = userRepository.findByFirstName(userName)
+                .orElseThrow(() -> new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found"));
         return new org.springframework.security.core.userdetails.User(user.getFirstName(), user.getPassword(),
                 new ArrayList<>());
     }
 
-    // Method to load user details
+    // Method to register user details
     @Override
     public UserDao registerUser(UserDto userDTO) {
-        UserDao userDao = (UserDao) modelMapper.map(userDTO, UserDao.class);
+        UserDao userDao = modelMapper.map(userDTO, UserDao.class);
         userDao.setCreatorStamp(LocalDateTime.now());
         userRepository.save(userDao);
         return userDao;
@@ -60,8 +59,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     // Method to change password
     @Override
-    public UserDao changePassword(UserDto userDTO) {
-        UserDao userDao = userRepository.findByEmail(userDTO.getEmail());
+    public UserDao changePassword(UserDto userDTO,String token) {
+        String id = util.extractUserName(token);
+        UserDao userDao = userRepository.findByEmail(userDTO.getEmail())
+                .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
         userDao.setPassword(userDTO.getPassword());
         return userRepository.save(userDao);
     }
@@ -80,13 +81,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return jwt;
     }
 
-    // Method to get token by username
-    @Override
-    public String getId(String token) {
-        String id = util.extractUserName(token);
-        return id;
-    }
-
     // Method to send mail on the user's mail
     @Override
     public String getMail(UserDto userDTO) {
@@ -95,7 +89,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userDTO.setLastName(userDTO.getLastName());
 
         try {
-            UserDao user = userRepository.findByEmail(userDTO.getEmail());
+            UserDao user = userRepository.findByEmail(userDTO.getEmail())
+                    .orElseThrow(() -> new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found"));
             SimpleMailMessage mail = new SimpleMailMessage();
             mail.setTo(userDTO.getEmail());
             mail.setFrom("${gmail.username}");
@@ -113,8 +108,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     // Method to check user
     @Override
-    public boolean checkUser(UserDto userDTO){
-        userDTO.getVerified();
-        return true;
+    public boolean checkUser(LoginDto loginDTO) {
+        UserDao userDao = userRepository.findByEmail(loginDTO.email).orElseThrow(() -> new LMSException(LMSException.exceptionType
+                .INVALID_EMAIL_ID, "User not found with email"));
+        if (loginDTO.password.matches(userDao.getPassword()))
+            return true;
+        throw new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found");
+
     }
 }
