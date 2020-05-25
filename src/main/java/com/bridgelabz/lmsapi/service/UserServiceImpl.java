@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     // Method to send mail on the user's mail
     @Override
-    public String getMail(UserDto userDTO) {
+    public String sendMail(UserDto userDTO) {
         userDTO.setEmail(userDTO.getEmail());
         userDTO.setFirstName(userDTO.getFirstName());
         userDTO.setLastName(userDTO.getLastName());
@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             mail.setFrom("${gmail.username}");
             mail.setSubject("Regarding reset password ");
             mail.setText("Hello " + userDTO.getFirstName() + " please reset your password using the link and token " +
-                    "Link: http://localhost:8080/change-password " + "Use your email and a new password and use the token " +
+                    "Link: http://localhost:8080/changepassword " + "Use your email and a new password and use the token " +
                     "token: " + util.getToken(user.getId()));
 
             javaMailSender.send(mail);

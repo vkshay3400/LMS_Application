@@ -10,9 +10,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 public interface UserService {
 
     UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException;
+
     UserDao registerUser(UserDto userDTO);
-    UserDao changePassword(UserDto userDTO,String token);
+
+    UserDao changePassword(UserDto userDTO, String token);
+
     String getToken(AuthenticationRequest authenticationRequest) throws Exception;
-    String getMail(UserDto userDTO);
+
+    String sendMail(UserDto userDTO);
+
     boolean checkUser(LoginDto loginDTO);
 }

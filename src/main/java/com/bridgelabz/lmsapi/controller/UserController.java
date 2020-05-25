@@ -42,7 +42,7 @@ public class UserController {
     // API to send mail
     @PostMapping(value = "/sendmail")
     public ResponseEntity<String> sendMail(@RequestBody UserDto userDTO) {
-        return new ResponseEntity<>(service.getMail(userDTO),HttpStatus.GONE);
+        return new ResponseEntity<>(service.sendMail(userDTO),HttpStatus.GONE);
     }
 
     // API to change password

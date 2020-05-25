@@ -1,5 +1,6 @@
 package com.bridgelabz.lmsapi.controller;
 
+import com.bridgelabz.lmsapi.dto.HiredCandidateDto;
 import com.bridgelabz.lmsapi.model.CandidateDao;
 import com.bridgelabz.lmsapi.service.HiredCandidateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/hired")
@@ -38,4 +38,18 @@ public class HiredCandidateController {
     public ResponseEntity<CandidateDao> getCandidateDetails(@RequestParam (value = "id") long id) throws IOException{
         return new ResponseEntity<CandidateDao>(service.findById(id),HttpStatus.FOUND);
     }
+
+    // API to send mail to update candidate choice
+    @PostMapping(value = "/sendmail")
+    public ResponseEntity<String> sendMail(@RequestBody HiredCandidateDto hiredCandidateDto) {
+        return new ResponseEntity<>(service.sendMail(hiredCandidateDto),HttpStatus.GONE);
+    }
+
+    // API to update candidate status
+    @PutMapping(value = "/onboradstatus")
+    public ResponseEntity<String> onBoradStatus(@RequestBody HiredCandidateDto hiredCandidateDto, @RequestParam(value = "choice") String choice) {
+        service.getOnboardStatus(hiredCandidateDto,choice);
+        return new ResponseEntity<>("Updated Status successsfully",HttpStatus.ACCEPTED);
+    }
+
 }

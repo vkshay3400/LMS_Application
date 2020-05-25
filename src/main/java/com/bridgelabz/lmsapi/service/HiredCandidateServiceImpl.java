@@ -1,8 +1,10 @@
 package com.bridgelabz.lmsapi.service;
 
 import com.bridgelabz.lmsapi.dto.HiredCandidateDto;
+import com.bridgelabz.lmsapi.dto.UserDto;
 import com.bridgelabz.lmsapi.exception.LMSException;
 import com.bridgelabz.lmsapi.model.CandidateDao;
+import com.bridgelabz.lmsapi.model.UserDao;
 import com.bridgelabz.lmsapi.repository.HiredCandidateRepository;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -10,6 +12,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +32,10 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private JavaMailSender javaMailSender;
+
+    private String Accept, Reject, Pending;
     HiredCandidateDto hiredCandidateDTO = new HiredCandidateDto();
 
     // Method to get details from excel sheet
@@ -109,7 +117,7 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
 
             CandidateDao candidateDao = modelMapper.map(hiredCandidateDTO, CandidateDao.class);
             if (candidateDao.equals(null))
-               throw new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found");
+                throw new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found");
             hiredCandidateRepository.save(candidateDao);
         }
     }
@@ -120,7 +128,7 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
         List<CandidateDao> list = hiredCandidateRepository.findAll();
         if (list.equals(null))
             throw new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found");
-       return list;
+        return list;
     }
 
     // Method to get profile of hired candidate
@@ -128,6 +136,51 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
     public CandidateDao findById(long id) {
         return hiredCandidateRepository.findById(id)
                 .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
+    }
+
+    // Method to send mail on the user's mail
+    @Override
+    public String sendMail(HiredCandidateDto hiredCandidateDto) {
+        hiredCandidateDto.setEmail(hiredCandidateDto.getEmail());
+        hiredCandidateDto.setFirstName(hiredCandidateDto.getFirstName());
+        hiredCandidateDto.setLastName(hiredCandidateDto.getLastName());
+
+        try {
+            CandidateDao candidateDao = hiredCandidateRepository.findByEmail(hiredCandidateDto.getEmail())
+                    .orElseThrow(() -> new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found"));
+            SimpleMailMessage mail = new SimpleMailMessage();
+            mail.setTo(hiredCandidateDto.getEmail());
+            mail.setFrom("${gmail.username}");
+            mail.setSubject("Regarding your choice for joining ");
+            mail.setText("Hello " + hiredCandidateDto.getFirstName() + " please select your choice: Accept or Reject to " +
+                    "join the fellowship program and click on the link and put your choice " +
+                    "Link: http://localhost:8080/hired/onboardstatus/choice?= {Your choice} ");
+
+            javaMailSender.send(mail);
+            return new String("Mail sent successfully");
+        } catch (Exception e) {
+            return new String("Mail Exception");
+        }
+    }
+
+    // Method to change onboard status
+    @Override
+    public CandidateDao getOnboardStatus(HiredCandidateDto hiredCandidateDto, String choice) {
+        CandidateDao candidateDao = hiredCandidateRepository.findById(hiredCandidateDto.getId())
+                .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
+        switch (choice) {
+            case "Accept":
+                candidateDao.setStatus("Accept");
+                hiredCandidateRepository.save(candidateDao);
+                break;
+            case "Reject":
+                candidateDao.setStatus("Reject");
+                break;
+            default:
+                candidateDao.setStatus("Pending");
+                break;
+        }
+        return hiredCandidateRepository.save(candidateDao);
     }
 
 }
