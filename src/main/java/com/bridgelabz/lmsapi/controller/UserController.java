@@ -3,7 +3,7 @@ package com.bridgelabz.lmsapi.controller;
 import com.bridgelabz.lmsapi.dto.UserDto;
 import com.bridgelabz.lmsapi.model.AuthenticationRequest;
 import com.bridgelabz.lmsapi.model.AuthenticationResponse;
-import com.bridgelabz.lmsapi.model.LoginDto;
+import com.bridgelabz.lmsapi.dto.LoginDto;
 import com.bridgelabz.lmsapi.model.UserDao;
 import com.bridgelabz.lmsapi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

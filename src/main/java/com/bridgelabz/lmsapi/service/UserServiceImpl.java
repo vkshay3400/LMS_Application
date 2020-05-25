@@ -3,7 +3,7 @@ package com.bridgelabz.lmsapi.service;
 import com.bridgelabz.lmsapi.dto.UserDto;
 import com.bridgelabz.lmsapi.exception.LMSException;
 import com.bridgelabz.lmsapi.model.AuthenticationRequest;
-import com.bridgelabz.lmsapi.model.LoginDto;
+import com.bridgelabz.lmsapi.dto.LoginDto;
 import com.bridgelabz.lmsapi.model.UserDao;
 import com.bridgelabz.lmsapi.repository.UserRepository;
 import com.bridgelabz.lmsapi.util.JwtUtil;
