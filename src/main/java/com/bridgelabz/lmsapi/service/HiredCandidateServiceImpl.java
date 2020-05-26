@@ -60,7 +60,6 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
                 List data = new ArrayList();
                 if (!flag) {
                     while (cellIterators.hasNext()) {
-
                         XSSFCell cell = (XSSFCell) cellIterators.next();
                         data.add(cell);
                         candidateList.add(data);
@@ -204,28 +203,10 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
 
             // To save data in fellowship database table
             FellowshipDao fellowshipDao = new FellowshipDao();
-
-            fellowshipDao.setFirstName(candidateDao.getFirstName());
-            fellowshipDao.setMiddleName(candidateDao.getMiddleName());
-            fellowshipDao.setLastName(candidateDao.getLastName());
-            fellowshipDao.setEmail(candidateDao.getEmail());
-            fellowshipDao.setHiredCity(candidateDao.getHiredCity());
-            fellowshipDao.setDegree(candidateDao.getDegree());
-            fellowshipDao.setHiredDate(candidateDao.getHiredDate());
-            fellowshipDao.setMobileNumber(candidateDao.getMobileNumber());
-            fellowshipDao.setPermanentPincode(candidateDao.getPermanentPincode());
-            fellowshipDao.setHiredLab(candidateDao.getHiredLab());
-            fellowshipDao.setAttitude(candidateDao.getAttitude());
-            fellowshipDao.setCommunicationRemark(candidateDao.getCommunicationRemark());
-            fellowshipDao.setKnowledgeRemark(candidateDao.getKnowledgeRemark());
-            fellowshipDao.setAggregateRemark(candidateDao.getAggregateRemark());
-            fellowshipDao.setCreatorStamp(candidateDao.getCreatorStamp());
-
+            modelMapper.map(candidateDao, fellowshipDao);
             if (fellowshipDao.equals(null))
                 throw new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found");
-
             fellowshipCandidateRepository.save(fellowshipDao);
-
             return new String("Mail sent successfully");
         }
         return new String("Candidate Status is not Accept");
