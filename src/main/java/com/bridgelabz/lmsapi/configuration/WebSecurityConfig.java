@@ -31,7 +31,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests().antMatchers("/user/authenticate","/user/register",
                 "/user/login","/user/sendmail","/user/changepassword","/hired/importhiredlist","/hired/allhiredcandidates",
-                "/hired/hiredcandidatedetails","/hired/sendmail","/hired/onboradstatus","/hired/sendjoboffer" ).permitAll()
+                "/hired/hiredcandidatedetails","/fellowship/updatedetails","/fellowship/count","/hired/sendmail","/hired/onboradstatus","/hired/sendjoboffer" ).permitAll()
                 .anyRequest().authenticated()
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
