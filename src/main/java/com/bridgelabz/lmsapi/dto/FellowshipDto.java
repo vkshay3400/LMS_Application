@@ -1,18 +1,12 @@
-package com.bridgelabz.lmsapi.model;
+package com.bridgelabz.lmsapi.dto;
 
 import lombok.Data;
 
-import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@Table(name = "fellowship")
-@Entity(name = "fellowship")
-public class FellowshipDao implements Serializable {
+public class FellowshipDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     private String firstName;
     private String middleName;
@@ -46,5 +40,6 @@ public class FellowshipDao implements Serializable {
     private String educationalInformation;
     private String documentStatus;
     private String remark;
+    private String status;
 
 }
