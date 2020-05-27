@@ -2,28 +2,30 @@ package com.bridgelabz.lmsapi.dto;
 
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
-public class HiredCandidateDto {
+public class CandidateQualificationDto {
 
     private long id;
-    private String firstName;
-    private String middleName;
-    private String lastName;
-    private String email;
-    private String hiredCity;
-    private String degree;
-    private Date hiredDate;
-    private long mobileNumber;
-    private long permanentPincode;
-    private String hiredLab;
-    private String attitude;
-    private String communicationRemark;
-    private String knowledgeRemark;
-    private String aggregateRemark;
-    private String status;
-    private Date creatorStamp;
+    private long candidateId;
+    private String diploma;
+    private String degreeName;
+    private String isDegreeNameVerified;
+    private String employeeDiscipline;
+    private String isEmployeeDisciplineVerified;
+    private long passingYear;
+    private String isPassingYearVerified;
+    private long aggregatePercentage;
+    private long finalYearPercentage;
+    private String isFinalYearPercentageVerified;
+    private String trainingInstitute;
+    private String isTrainingInstituteVerified;
+    private long trainingDurationMonth;
+    private String isTrainingDurationMonthVerified;
+    private String isOtherTrainingVerified;
+    private String otherTraining;
+    private LocalDateTime creatorStamp;
     private String creatorUser;
 
 }

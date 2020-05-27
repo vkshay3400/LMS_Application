@@ -2,33 +2,36 @@ package com.bridgelabz.lmsapi.model;
 
 import lombok.Data;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
-@Table(name = "hired_candidate")
-@Entity(name = "hired_candidate")
-public class HiredCandidateDao implements Serializable{
+@Table(name = "candidate_qualification")
+@Entity(name = "candidate_qualification")
+public class CandidateQualificationDao implements Serializable{
 
     @Id
     private long id;
-    private String firstName;
-    private String middleName;
-    private String lastName;
-    private String email;
-    private String hiredCity;
-    private String degree;
-    private Date hiredDate;
-    private long mobileNumber;
-    private long permanentPincode;
-    private String hiredLab;
-    private String attitude;
-    private String communicationRemark;
-    private String knowledgeRemark;
-    private String aggregateRemark;
-    private String status;
-    private Date creatorStamp;
+    private long candidateId;
+    private String diploma;
+    private String degreeName;
+    private String isDegreeNameVerified;
+    private String employeeDiscipline;
+    private String isEmployeeDisciplineVerified;
+    private long passingYear;
+    private String isPassingYearVerified;
+    private long aggregatePercentage;
+    private long finalYearPercentage;
+    private String isFinalYearPercentageVerified;
+    private String trainingInstitute;
+    private String isTrainingInstituteVerified;
+    private long trainingDurationMonth;
+    private String isTrainingDurationMonthVerified;
+    private String isOtherTrainingVerified;
+    private String otherTraining;
+    private LocalDateTime creatorStamp;
     private String creatorUser;
-
 }
