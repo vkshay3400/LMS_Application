@@ -1,7 +1,7 @@
 package com.bridgelabz.lmsapi.service;
 
 import com.bridgelabz.lmsapi.dto.PersonalDetailsDto;
-import com.bridgelabz.lmsapi.model.CandidateDao;
+import com.bridgelabz.lmsapi.model.HiredCandidateDao;
 import com.bridgelabz.lmsapi.model.FellowshipDao;
 import com.bridgelabz.lmsapi.repository.FellowshipCandidateRepository;
 import com.bridgelabz.lmsapi.repository.HiredCandidateRepository;
@@ -26,8 +26,8 @@ public class FellowshipCandidateServiceImpl implements FellowshipCandidateServic
     // Method to save data in fellowship database table
     @Override
     public void getDetails() {
-        List<CandidateDao> list = hiredCandidateRepository.findAll();
-        for (CandidateDao candidate : list) {
+        List<HiredCandidateDao> list = hiredCandidateRepository.findAll();
+        for (HiredCandidateDao candidate : list) {
             if (candidate.getStatus().matches("Accept")) {
                 FellowshipDao fellowshipDao = modelMapper
                         .map(candidate, FellowshipDao.class);

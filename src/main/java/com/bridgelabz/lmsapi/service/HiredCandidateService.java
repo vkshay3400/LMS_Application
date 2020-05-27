@@ -1,7 +1,7 @@
 package com.bridgelabz.lmsapi.service;
 
 import com.bridgelabz.lmsapi.dto.HiredCandidateDto;
-import com.bridgelabz.lmsapi.model.CandidateDao;
+import com.bridgelabz.lmsapi.model.HiredCandidateDao;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,11 +16,11 @@ public interface HiredCandidateService {
 
     List getList();
 
-    CandidateDao findById(long id);
+    HiredCandidateDao findById(long id);
 
     String sendMail(HiredCandidateDto hiredCandidateDto);
 
-    CandidateDao getOnboardStatus(HiredCandidateDto hiredCandidateDto, String choice);
+    HiredCandidateDao getOnboardStatus(HiredCandidateDto hiredCandidateDto, String choice);
 
     String sendJobOffer(HiredCandidateDto hiredCandidateDto);
 
