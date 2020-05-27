@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Data
 @Table(name = "bank_details")
 @Entity(name = "bank_details")
-public class BankDetails {
+public class BankDetailsDao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

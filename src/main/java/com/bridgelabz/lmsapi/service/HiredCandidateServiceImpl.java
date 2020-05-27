@@ -2,7 +2,7 @@ package com.bridgelabz.lmsapi.service;
 
 import com.bridgelabz.lmsapi.dto.HiredCandidateDto;
 import com.bridgelabz.lmsapi.exception.LMSException;
-import com.bridgelabz.lmsapi.model.CandidateDao;
+import com.bridgelabz.lmsapi.model.HiredCandidateDao;
 import com.bridgelabz.lmsapi.model.FellowshipDao;
 import com.bridgelabz.lmsapi.repository.FellowshipCandidateRepository;
 import com.bridgelabz.lmsapi.repository.HiredCandidateRepository;
@@ -117,17 +117,17 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
             cell = (XSSFCell) list.get(index++);
             hiredCandidateDTO.setCreatorUser(cell.getStringCellValue());
 
-            CandidateDao candidateDao = modelMapper.map(hiredCandidateDTO, CandidateDao.class);
-            if (candidateDao.equals(null))
+            HiredCandidateDao hiredCandidateDao = modelMapper.map(hiredCandidateDTO, HiredCandidateDao.class);
+            if (hiredCandidateDao.equals(null))
                 throw new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found");
-            hiredCandidateRepository.save(candidateDao);
+            hiredCandidateRepository.save(hiredCandidateDao);
         }
     }
 
     // Method to get list of hired candidates
     @Override
     public List getList() {
-        List<CandidateDao> list = hiredCandidateRepository.findAll();
+        List<HiredCandidateDao> list = hiredCandidateRepository.findAll();
         if (list.equals(null))
             throw new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found");
         return list;
@@ -135,7 +135,7 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
 
     // Method to get profile of hired candidate
     @Override
-    public CandidateDao findById(long id) {
+    public HiredCandidateDao findById(long id) {
         return hiredCandidateRepository.findById(id)
                 .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
     }
@@ -148,7 +148,7 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
         hiredCandidateDto.setLastName(hiredCandidateDto.getLastName());
 
         try {
-            CandidateDao candidateDao = hiredCandidateRepository.findByEmail(hiredCandidateDto.getEmail())
+            HiredCandidateDao hiredCandidateDao = hiredCandidateRepository.findByEmail(hiredCandidateDto.getEmail())
                     .orElseThrow(() -> new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found"));
             SimpleMailMessage mail = new SimpleMailMessage();
             mail.setTo(hiredCandidateDto.getEmail());
@@ -167,31 +167,31 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
 
     // Method to change onboard status
     @Override
-    public CandidateDao getOnboardStatus(HiredCandidateDto hiredCandidateDto, String choice) {
-        CandidateDao candidateDao = hiredCandidateRepository.findById(hiredCandidateDto.getId())
+    public HiredCandidateDao getOnboardStatus(HiredCandidateDto hiredCandidateDto, String choice) {
+        HiredCandidateDao hiredCandidateDao = hiredCandidateRepository.findById(hiredCandidateDto.getId())
                 .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
         switch (choice) {
             case "Accept":
-                candidateDao.setStatus("Accept");
-                hiredCandidateRepository.save(candidateDao);
+                hiredCandidateDao.setStatus("Accept");
+                hiredCandidateRepository.save(hiredCandidateDao);
                 break;
             case "Reject":
-                candidateDao.setStatus("Reject");
+                hiredCandidateDao.setStatus("Reject");
                 break;
             default:
-                candidateDao.setStatus("Pending");
+                hiredCandidateDao.setStatus("Pending");
                 break;
         }
-        return hiredCandidateRepository.save(candidateDao);
+        return hiredCandidateRepository.save(hiredCandidateDao);
     }
 
     // Method to send job offer
     @Override
     public String sendJobOffer(HiredCandidateDto hiredCandidateDto) {
-        CandidateDao candidateDao = hiredCandidateRepository.findById(hiredCandidateDto.getId())
+        HiredCandidateDao hiredCandidateDao = hiredCandidateRepository.findById(hiredCandidateDto.getId())
                 .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
-        if (candidateDao.getStatus().matches("Accept")) {
-            candidateDao = hiredCandidateRepository.findByEmail(hiredCandidateDto.getEmail())
+        if (hiredCandidateDao.getStatus().matches("Accept")) {
+            hiredCandidateDao = hiredCandidateRepository.findByEmail(hiredCandidateDto.getEmail())
                     .orElseThrow(() -> new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found"));
             SimpleMailMessage mail = new SimpleMailMessage();
             mail.setTo(hiredCandidateDto.getEmail());
@@ -203,7 +203,7 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
 
             // To save data in fellowship database table
             FellowshipDao fellowshipDao = new FellowshipDao();
-            modelMapper.map(candidateDao, fellowshipDao);
+            modelMapper.map(hiredCandidateDao, fellowshipDao);
             if (fellowshipDao.equals(null))
                 throw new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found");
             fellowshipCandidateRepository.save(fellowshipDao);
