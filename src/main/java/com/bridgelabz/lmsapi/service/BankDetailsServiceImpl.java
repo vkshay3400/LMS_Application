@@ -1,6 +1,7 @@
 package com.bridgelabz.lmsapi.service;
 
 import com.bridgelabz.lmsapi.dto.BankDetailsDto;
+import com.bridgelabz.lmsapi.exception.LMSException;
 import com.bridgelabz.lmsapi.model.BankDetailsDao;
 import com.bridgelabz.lmsapi.repository.BankDetailsRepository;
 import com.bridgelabz.lmsapi.repository.FellowshipCandidateRepository;
@@ -25,7 +26,8 @@ public class BankDetailsServiceImpl implements BankDetailsService {
     // Method to update bank details
     @Override
     public void saveBankDetails(BankDetailsDto bankDetailsDto) {
-        fellowshipCandidateRepository.findById(bankDetailsDto.getCandidateId());
+        fellowshipCandidateRepository.findById(bankDetailsDto.getCandidateId())
+                .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
         BankDetailsDao bankDetailsDao = modelMapper
                 .map(bankDetailsDto, BankDetailsDao.class);
         bankDetailsDao.setCreatorStamp(LocalDateTime.now());
