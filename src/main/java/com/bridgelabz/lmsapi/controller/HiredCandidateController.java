@@ -1,6 +1,5 @@
 package com.bridgelabz.lmsapi.controller;
 
-import com.bridgelabz.lmsapi.configuration.ApplicationConfig;
 import com.bridgelabz.lmsapi.dto.HiredCandidateDto;
 import com.bridgelabz.lmsapi.model.CandidateDao;
 import com.bridgelabz.lmsapi.service.HiredCandidateService;
