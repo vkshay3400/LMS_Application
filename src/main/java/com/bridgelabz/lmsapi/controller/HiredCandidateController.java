@@ -1,7 +1,7 @@
 package com.bridgelabz.lmsapi.controller;
 
 import com.bridgelabz.lmsapi.dto.HiredCandidateDto;
-import com.bridgelabz.lmsapi.model.CandidateDao;
+import com.bridgelabz.lmsapi.model.HiredCandidateDao;
 import com.bridgelabz.lmsapi.service.HiredCandidateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,8 +35,8 @@ public class HiredCandidateController {
 
     // API to get candidate profile
     @GetMapping(value = "/hiredcandidatedetails")
-    public ResponseEntity<CandidateDao> getCandidateDetails(@RequestParam (value = "id") long id) throws IOException{
-        return new ResponseEntity<CandidateDao>(service.findById(id),HttpStatus.FOUND);
+    public ResponseEntity<HiredCandidateDao> getCandidateDetails(@RequestParam (value = "id") long id) throws IOException{
+        return new ResponseEntity<HiredCandidateDao>(service.findById(id),HttpStatus.FOUND);
     }
 
     // API to send mail to update candidate choice

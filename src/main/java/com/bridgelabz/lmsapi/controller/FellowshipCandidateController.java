@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/fellowship")
+@RequestMapping(value = "/fellowship")
 public class FellowshipCandidateController {
 
     @Autowired
