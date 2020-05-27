@@ -27,23 +27,23 @@ import java.util.List;
 public class HiredCandidateServiceImpl implements HiredCandidateService {
 
     @Autowired
-    private HiredCandidateRepository hiredCandidateRepository;
-
-    @Autowired
-    private FellowshipCandidateRepository fellowshipCandidateRepository;
-
-    @Autowired
     private ModelMapper modelMapper;
 
     @Autowired
     private JavaMailSender javaMailSender;
+
+    @Autowired
+    private HiredCandidateRepository hiredCandidateRepository;
+
+    @Autowired
+    private FellowshipCandidateRepository fellowshipCandidateRepository;
 
     private String Accept, Reject, Pending;
     HiredCandidateDto hiredCandidateDTO = new HiredCandidateDto();
 
     // Method to get details from excel sheet
     @Override
-    public List getHiredCandidate(MultipartFile filePath) {
+    public void getHiredCandidate(MultipartFile filePath) {
         List candidateList = new ArrayList();
         boolean flag = true;
         try (InputStream fileInputStream = filePath.getInputStream()) {
@@ -70,7 +70,7 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return candidateList;
+        saveCandidateDetails(candidateList);
     }
 
     // Method to save details in database

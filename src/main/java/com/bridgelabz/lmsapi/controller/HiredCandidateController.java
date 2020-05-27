@@ -21,41 +21,40 @@ public class HiredCandidateController {
 
     // API to put in db
     @PostMapping(value = "/importhiredlist")
-    public ResponseEntity<String > importList(@RequestParam("file") MultipartFile file) throws IOException {
-        List getList = service.getHiredCandidate(file);
-        service.saveCandidateDetails(getList);
-        return new ResponseEntity<>( "Imported Successfully", HttpStatus.CREATED);
+    public ResponseEntity<String> importList(@RequestParam("file") MultipartFile file) throws IOException {
+        service.getHiredCandidate(file);
+        return new ResponseEntity<>("Imported Successfully", HttpStatus.CREATED);
     }
 
     // API to get list
     @GetMapping(value = "/allhiredcandidates")
     public ResponseEntity<List> getAllCandidatesDetails() {
-        return new ResponseEntity<>( service.getList(),HttpStatus.FOUND);
+        return new ResponseEntity<>(service.getList(), HttpStatus.FOUND);
     }
 
     // API to get candidate profile
     @GetMapping(value = "/hiredcandidatedetails")
-    public ResponseEntity<HiredCandidateDao> getCandidateDetails(@RequestParam (value = "id") long id) throws IOException{
-        return new ResponseEntity<HiredCandidateDao>(service.findById(id),HttpStatus.FOUND);
+    public ResponseEntity<HiredCandidateDao> getCandidateDetails(@RequestParam(value = "id") long id) throws IOException {
+        return new ResponseEntity<HiredCandidateDao>(service.findById(id), HttpStatus.FOUND);
     }
 
     // API to send mail to update candidate choice
     @PostMapping(value = "/sendmail")
     public ResponseEntity<String> sendMail(@RequestBody HiredCandidateDto hiredCandidateDto) {
-        return new ResponseEntity<>(service.sendMail(hiredCandidateDto),HttpStatus.GONE);
+        return new ResponseEntity<>(service.sendMail(hiredCandidateDto), HttpStatus.GONE);
     }
 
     // API to update candidate status
     @PutMapping(value = "/onboradstatus")
     public ResponseEntity<String> onBoradStatus(@RequestBody HiredCandidateDto hiredCandidateDto, @RequestParam(value = "choice") String choice) {
-        service.getOnboardStatus(hiredCandidateDto,choice);
-        return new ResponseEntity<>("Updated Status successsfully",HttpStatus.ACCEPTED);
+        service.getOnboardStatus(hiredCandidateDto, choice);
+        return new ResponseEntity<>("Updated Status successsfully", HttpStatus.ACCEPTED);
     }
 
     // API to update candidate status
     @PostMapping(value = "/sendjoboffer")
     public ResponseEntity<String> sendJobOffer(@RequestBody HiredCandidateDto hiredCandidateDto) {
         String mailMessage = service.sendJobOffer(hiredCandidateDto);
-        return new ResponseEntity<>(mailMessage,HttpStatus.OK);
+        return new ResponseEntity<>(mailMessage, HttpStatus.OK);
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface HiredCandidateService {
 
-    List getHiredCandidate(MultipartFile filePath);
+    void getHiredCandidate(MultipartFile filePath);
 
     void saveCandidateDetails(List<List<XSSFCell>> candidateList) throws IOException;
 
