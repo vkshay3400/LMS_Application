@@ -1,10 +1,12 @@
 package com.bridgelabz.lmsapi.repository;
 
-import com.bridgelabz.lmsapi.model.CandidateDao;
+import com.bridgelabz.lmsapi.model.HiredCandidateDao;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-public interface HiredCandidateRepository extends JpaRepository<CandidateDao, Long> {
-    Optional<CandidateDao> findByEmail(String email);
+@Repository
+public interface HiredCandidateRepository extends JpaRepository<HiredCandidateDao, Long> {
+    Optional<HiredCandidateDao> findByEmail(String email);
 }
