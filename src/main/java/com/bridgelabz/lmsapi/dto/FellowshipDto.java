@@ -28,18 +28,13 @@ public class FellowshipDto {
     private String isBirthDateVerified;
     private String parentName;
     private String parentOccupation;
-    private String parentMobileNumber;
-    private String parentAnnualSalary;
+    private long parentMobileNumber;
+    private long parentAnnualSalary;
     private String localAddress;
     private String permanentAddress;
     private String photoPath;
     private Date joiningDate;
     private String candidateStatus;
-    private String personalInformation;
-    private String bankInformation;
-    private String educationalInformation;
-    private String documentStatus;
     private String remark;
-    private String status;
 
 }

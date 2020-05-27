@@ -2,6 +2,7 @@ package com.bridgelabz.lmsapi.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 
 @Data
