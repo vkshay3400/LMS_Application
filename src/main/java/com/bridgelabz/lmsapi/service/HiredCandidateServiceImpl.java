@@ -38,7 +38,8 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
     @Autowired
     private FellowshipCandidateRepository fellowshipCandidateRepository;
 
-    HiredCandidateDto hiredCandidateDTO = new HiredCandidateDto();
+    @Autowired
+    HiredCandidateDto hiredCandidateDTO;
 
     // Method to get details from excel sheet
     @Override
