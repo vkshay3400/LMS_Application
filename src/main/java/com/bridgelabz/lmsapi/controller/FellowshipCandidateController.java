@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-
 @RestController
 @RequestMapping(value = "/fellowship")
 public class FellowshipCandidateController {
@@ -35,7 +33,7 @@ public class FellowshipCandidateController {
     public ResponseEntity<String> updateDetails(@RequestBody PersonalDetailsDto personalDetailsDto,
                                                 @RequestParam("id") long id) {
         service.getUpdateDetails(personalDetailsDto, id);
-        return new ResponseEntity<>("Updated Successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>("Updated details successfully", HttpStatus.CREATED);
     }
 
 }

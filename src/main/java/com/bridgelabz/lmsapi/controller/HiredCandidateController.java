@@ -35,7 +35,7 @@ public class HiredCandidateController {
     // API to get candidate profile
     @GetMapping(value = "/hiredcandidatedetails")
     public ResponseEntity<HiredCandidateDao> getCandidateDetails(@RequestParam(value = "id") long id) {
-        return new ResponseEntity<HiredCandidateDao>(service.findById(id), HttpStatus.FOUND);
+        return new ResponseEntity<>(service.findById(id), HttpStatus.FOUND);
     }
 
     // API to send mail to update candidate choice
@@ -49,7 +49,7 @@ public class HiredCandidateController {
     public ResponseEntity<String> onBoardStatus(@RequestBody HiredCandidateDto hiredCandidateDto,
                                                 @RequestParam(value = "choice") String choice) {
         service.getOnboardStatus(hiredCandidateDto, choice);
-        return new ResponseEntity<>("Updated Status successsfully", HttpStatus.ACCEPTED);
+        return new ResponseEntity<>("Updated Status successfully", HttpStatus.ACCEPTED);
     }
 
     // API to update candidate status
@@ -58,4 +58,5 @@ public class HiredCandidateController {
         String mailMessage = service.sendJobOffer(hiredCandidateDto);
         return new ResponseEntity<>(mailMessage, HttpStatus.OK);
     }
+
 }

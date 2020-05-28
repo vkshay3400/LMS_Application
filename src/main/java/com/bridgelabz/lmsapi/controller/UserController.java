@@ -1,6 +1,7 @@
 package com.bridgelabz.lmsapi.controller;
 
 import com.bridgelabz.lmsapi.dto.UserDto;
+import com.bridgelabz.lmsapi.exception.LMSException;
 import com.bridgelabz.lmsapi.model.AuthenticationRequest;
 import com.bridgelabz.lmsapi.model.AuthenticationResponse;
 import com.bridgelabz.lmsapi.dto.LoginDto;
@@ -34,7 +35,7 @@ public class UserController {
     // API for login user
     @GetMapping(value = "/login")
     public ResponseEntity<String> login(@RequestBody LoginDto loginDto) {
-        boolean userLogin = service.checkUser(loginDto);
+        service.checkUser(loginDto);
         return new ResponseEntity<>("Login Successful", HttpStatus.OK);
     }
 
@@ -50,4 +51,5 @@ public class UserController {
         service.changePassword(userDto,token);
         return new ResponseEntity<>("Changed password successfully",HttpStatus.CREATED);
     }
+
 }

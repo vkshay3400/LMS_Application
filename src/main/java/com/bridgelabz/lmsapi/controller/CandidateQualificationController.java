@@ -21,6 +21,7 @@ public class CandidateQualificationController {
     @PostMapping(value = "/update")
     public ResponseEntity<String> updateQualification(@RequestBody CandidateQualificationDto candidateQualificationDto) {
         service.saveEducationDetails(candidateQualificationDto);
-        return new ResponseEntity<>("Saved", HttpStatus.CREATED);
+        return new ResponseEntity<>("Updated qualification details successfully", HttpStatus.CREATED);
     }
+
 }

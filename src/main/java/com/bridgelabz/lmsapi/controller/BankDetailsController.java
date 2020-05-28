@@ -18,6 +18,7 @@ public class BankDetailsController {
     @PostMapping(value = "/update")
     public ResponseEntity<String> updateDetails(@RequestBody BankDetailsDto bankDetailsDto) {
         service.saveBankDetails(bankDetailsDto);
-        return new ResponseEntity<>("Saved", HttpStatus.CREATED);
+        return new ResponseEntity<>("Updated bank details successfully", HttpStatus.CREATED);
     }
+
 }
