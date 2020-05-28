@@ -2,19 +2,29 @@ package com.bridgelabz.lmsapi.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
 public class FellowshipDto {
 
+    @NotNull
     private long id;
+    @NotNull
     private String firstName;
+    @NotNull
     private String middleName;
+    @NotNull
     private String lastName;
+    @NotNull
     private String email;
+    @NotNull
     private String hiredCity;
+    @NotNull
     private String degree;
+    @NotNull
     private Date hiredDate;
+    @NotNull
     private long mobileNumber;
     private long permanentPincode;
     private String hiredLab;
@@ -33,8 +43,11 @@ public class FellowshipDto {
     private String localAddress;
     private String permanentAddress;
     private String photoPath;
+    @NotNull
     private Date joiningDate;
+    @NotNull
     private String candidateStatus;
+    @NotNull
     private String remark;
 
 }
