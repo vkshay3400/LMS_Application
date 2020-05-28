@@ -33,7 +33,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/login","/user/sendmail","/user/changepassword","/hired/importhiredlist","/hired/allhiredcandidates",
                 "/hired/hiredcandidatedetails","/qualificationdetails/update","/fellowship/updatedetails","/bankdetails/update",
                 "/fellowship/getdetails","/fellowship/count","/hired/sendmail","/hired/onboardstatus",
-                "/hired/sendjoboffer" ).permitAll()
+                "/hired/sendjoboffer","/swagger-ui.html/*","/swagger-resources/**",
+                "/swagger-ui.html", "/v2/api-docs", "/webjars/**" ).permitAll()
                 .anyRequest().authenticated()
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
