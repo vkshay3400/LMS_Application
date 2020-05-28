@@ -20,4 +20,5 @@ public interface UserService {
     String sendMail(UserDto userDTO);
 
     boolean checkUser(LoginDto loginDTO);
+
 }

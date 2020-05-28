@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
+
     @Autowired
     private ModelMapper modelMapper;
 
