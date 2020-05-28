@@ -20,14 +20,13 @@ public class UserController {
 
     // API for register user
     @PostMapping(value = "/register")
-    public ResponseEntity<UserDao> saveUser(@RequestBody UserDto userDto) throws Exception {
+    public ResponseEntity<UserDao> saveUser(@RequestBody UserDto userDto) {
         return new ResponseEntity(service.registerUser(userDto),HttpStatus.CREATED);
     }
 
     // API for authenticate user
     @PostMapping(value = "/authenticate")
-    public ResponseEntity<AuthenticationResponse> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest)
-            throws Exception {
+    public ResponseEntity<AuthenticationResponse> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
         String jwt = service.getToken(authenticationRequest);
         return new ResponseEntity<>(new AuthenticationResponse(jwt), HttpStatus.CREATED);
     }

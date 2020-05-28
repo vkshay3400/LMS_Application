@@ -21,7 +21,7 @@ public class HiredCandidateController {
 
     // API to put in db
     @PostMapping(value = "/importhiredlist")
-    public ResponseEntity<String> importList(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<String> importList(@RequestParam("file") MultipartFile file) {
         service.getHiredCandidate(file);
         return new ResponseEntity<>("Imported Successfully", HttpStatus.CREATED);
     }
@@ -34,7 +34,7 @@ public class HiredCandidateController {
 
     // API to get candidate profile
     @GetMapping(value = "/hiredcandidatedetails")
-    public ResponseEntity<HiredCandidateDao> getCandidateDetails(@RequestParam(value = "id") long id) throws IOException {
+    public ResponseEntity<HiredCandidateDao> getCandidateDetails(@RequestParam(value = "id") long id) {
         return new ResponseEntity<HiredCandidateDao>(service.findById(id), HttpStatus.FOUND);
     }
 
@@ -46,7 +46,8 @@ public class HiredCandidateController {
 
     // API to update candidate status
     @PutMapping(value = "/onboradstatus")
-    public ResponseEntity<String> onBoradStatus(@RequestBody HiredCandidateDto hiredCandidateDto, @RequestParam(value = "choice") String choice) {
+    public ResponseEntity<String> onBoradStatus(@RequestBody HiredCandidateDto hiredCandidateDto,
+                                                @RequestParam(value = "choice") String choice) {
         service.getOnboardStatus(hiredCandidateDto, choice);
         return new ResponseEntity<>("Updated Status successsfully", HttpStatus.ACCEPTED);
     }

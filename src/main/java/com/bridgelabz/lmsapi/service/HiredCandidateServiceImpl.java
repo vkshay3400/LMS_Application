@@ -38,7 +38,6 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
     @Autowired
     private FellowshipCandidateRepository fellowshipCandidateRepository;
 
-    private String Accept, Reject, Pending;
     HiredCandidateDto hiredCandidateDTO = new HiredCandidateDto();
 
     // Method to get details from excel sheet
@@ -147,22 +146,18 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
         hiredCandidateDto.setFirstName(hiredCandidateDto.getFirstName());
         hiredCandidateDto.setLastName(hiredCandidateDto.getLastName());
 
-        try {
-            HiredCandidateDao hiredCandidateDao = hiredCandidateRepository.findByEmail(hiredCandidateDto.getEmail())
-                    .orElseThrow(() -> new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found"));
-            SimpleMailMessage mail = new SimpleMailMessage();
-            mail.setTo(hiredCandidateDto.getEmail());
-            mail.setFrom("${gmail.username}");
-            mail.setSubject("Regarding your choice for joining ");
-            mail.setText("Hello " + hiredCandidateDto.getFirstName() + " please select your choice: Accept or Reject to " +
-                    "join the fellowship program and click on the link and put your choice " +
-                    "Link: http://localhost:8080/hired/onboardstatus/choice?= {Your choice} ");
+        HiredCandidateDao hiredCandidateDao = hiredCandidateRepository.findByEmail(hiredCandidateDto.getEmail())
+                .orElseThrow(() -> new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found"));
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setTo(hiredCandidateDto.getEmail());
+        mail.setFrom("${gmail.username}");
+        mail.setSubject("Regarding your choice for joining ");
+        mail.setText("Hello " + hiredCandidateDto.getFirstName() + " please select your choice: Accept or Reject to " +
+                "join the fellowship program and click on the link and put your choice " +
+                "Link: http://localhost:8080/hired/onboardstatus/choice?= {Your choice} ");
 
-            javaMailSender.send(mail);
-            return new String("Mail sent successfully");
-        } catch (Exception e) {
-            return new String("Mail Exception");
-        }
+        javaMailSender.send(mail);
+        return new String("Mail sent successfully");
     }
 
     // Method to change onboard status

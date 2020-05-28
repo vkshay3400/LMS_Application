@@ -12,11 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -41,7 +39,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     // Method to load user by name
     @Override
-    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String userName) {
         UserDao user = userRepository.findByFirstName(userName)
                 .orElseThrow(() -> new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found"));
         return new org.springframework.security.core.userdetails.User(user.getFirstName(), user.getPassword(),
@@ -59,7 +57,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     // Method to change password
     @Override
-    public UserDao changePassword(UserDto userDTO,String token) {
+    public UserDao changePassword(UserDto userDTO, String token) {
         String id = util.extractUserName(token);
         UserDao userDao = userRepository.findByEmail(userDTO.getEmail())
                 .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
@@ -69,12 +67,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     // Method to get token
     @Override
-    public String getToken(AuthenticationRequest authenticationRequest) throws Exception {
+    public String getToken(AuthenticationRequest authenticationRequest) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
                     authenticationRequest.getPassword()));
-        } catch (BadCredentialsException e) {
-            throw new Exception("Incorrect username or password", e);
+        } catch (LMSException e) {
+            throw new LMSException(LMSException.exceptionType.INVALID_PASSWORD, e.getMessage());
         }
         final UserDetails userDetails = loadUserByUsername(authenticationRequest.getUsername());
         final String jwt = util.generateToken(userDetails);
@@ -101,8 +99,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
             javaMailSender.send(mail);
             return new String("Mail sent successfully");
-        } catch (Exception e) {
-            return new String("Mail Exception");
+        } catch (LMSException e) {
+            throw new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, e.getMessage());
         }
     }
 
@@ -114,6 +112,5 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (loginDTO.password.matches(userDao.getPassword()))
             return true;
         throw new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found");
-
     }
 }

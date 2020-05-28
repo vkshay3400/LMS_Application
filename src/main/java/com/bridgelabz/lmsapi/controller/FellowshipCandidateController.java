@@ -18,7 +18,7 @@ public class FellowshipCandidateController {
 
     // API to put in db
     @PostMapping(value = "/getdetails")
-    public ResponseEntity<String> getDetails() throws IOException {
+    public ResponseEntity<String> getDetails() {
         service.getDetails();
         return new ResponseEntity<>("Imported Successfully", HttpStatus.CREATED);
     }
@@ -33,7 +33,7 @@ public class FellowshipCandidateController {
     // API to put in db
     @PutMapping(value = "/updatedetails")
     public ResponseEntity<String> updateDetails(@RequestBody PersonalDetailsDto personalDetailsDto,
-                                                @RequestParam("id") long id) throws IOException {
+                                                @RequestParam("id") long id) {
         service.getUpdateDetails(personalDetailsDto, id);
         return new ResponseEntity<>("Updated Successfully", HttpStatus.CREATED);
     }
