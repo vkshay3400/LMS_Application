@@ -1,11 +1,13 @@
 package com.bridgelabz.lmsapi.dto;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
+@ApiModel(description = "Model for Personal Details")
 public class PersonalDetailsDto {
 
     @NotNull

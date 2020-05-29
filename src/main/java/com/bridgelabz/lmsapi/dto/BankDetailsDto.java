@@ -1,11 +1,13 @@
 package com.bridgelabz.lmsapi.dto;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
+@ApiModel(description = "Model for Bank Details")
 public class BankDetailsDto {
 
     @NotNull

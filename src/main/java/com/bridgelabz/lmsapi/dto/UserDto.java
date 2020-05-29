@@ -1,5 +1,6 @@
 package com.bridgelabz.lmsapi.dto;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
@@ -8,6 +9,7 @@ import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 
 @Data
+@ApiModel(description = "Model for User Details")
 public class UserDto {
 
     @NotNull

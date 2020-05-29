@@ -1,11 +1,13 @@
 package com.bridgelabz.lmsapi.dto;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
+@ApiModel(description = "Model for Qualification Details")
 public class CandidateQualificationDto {
 
     @NotNull
@@ -17,9 +19,8 @@ public class CandidateQualificationDto {
     private String isDegreeNameVerified;
     private String employeeDiscipline;
     private String isEmployeeDisciplineVerified;
-    @NotNull
+    @NotNull(message = "Passing Year is required")
     private long passingYear;
-    @NotNull
     private String isPassingYearVerified;
     private long aggregatePercentage;
     private long finalYearPercentage;
@@ -30,9 +31,8 @@ public class CandidateQualificationDto {
     private String isTrainingDurationMonthVerified;
     private String isOtherTrainingVerified;
     private String otherTraining;
-    @NotNull
     private LocalDateTime creatorStamp;
-    @NotNull
+    @NotNull(message = "Creator User is required")
     private String creatorUser;
 
 }

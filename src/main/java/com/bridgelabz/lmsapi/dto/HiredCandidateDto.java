@@ -1,5 +1,6 @@
 package com.bridgelabz.lmsapi.dto;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
@@ -8,6 +9,7 @@ import java.util.Date;
 
 @Component
 @Data
+@ApiModel(description = "Model for Hired Candidate Details")
 public class HiredCandidateDto {
 
     @NotNull
