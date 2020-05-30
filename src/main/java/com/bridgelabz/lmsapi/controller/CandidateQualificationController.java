@@ -18,7 +18,7 @@ public class CandidateQualificationController {
     private CandidateQualificationService service;
 
     // API for education update
-    @PostMapping //(value = "/update")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> updateQualification(@RequestBody CandidateQualificationDto candidateQualificationDto) {
         service.saveEducationDetails(candidateQualificationDto);

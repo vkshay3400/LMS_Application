@@ -17,7 +17,7 @@ public class BankDetailsController {
     private BankDetailsService service;
 
     // API for register user
-    @PostMapping   //(value = "/update")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> updateDetails(@RequestBody BankDetailsDto bankDetailsDto) {
         service.saveBankDetails(bankDetailsDto);
