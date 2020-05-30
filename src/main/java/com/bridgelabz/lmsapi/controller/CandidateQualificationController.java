@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "/qualificationdetails")
+@RequestMapping(value = "/update/qualification")
 @Api(tags = "Qualification Details", value = "QualificationDetails",
         description = "Controller for Qualification Details update")
 public class CandidateQualificationController {
@@ -18,7 +18,7 @@ public class CandidateQualificationController {
     private CandidateQualificationService service;
 
     // API for education update
-    @PostMapping(value = "/update")
+    @PostMapping //(value = "/update")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> updateQualification(@RequestBody CandidateQualificationDto candidateQualificationDto) {
         service.saveEducationDetails(candidateQualificationDto);

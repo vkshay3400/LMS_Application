@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "/bankdetails")
+@RequestMapping(value = "/update/bank")
 @Api(tags = "Bank Details", value = "BankDetails", description = "Controller for Bank Details update")
 public class BankDetailsController {
 
@@ -17,7 +17,7 @@ public class BankDetailsController {
     private BankDetailsService service;
 
     // API for register user
-    @PostMapping(value = "/update")
+    @PostMapping   //(value = "/update")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> updateDetails(@RequestBody BankDetailsDto bankDetailsDto) {
         service.saveBankDetails(bankDetailsDto);

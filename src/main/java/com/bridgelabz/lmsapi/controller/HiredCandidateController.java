@@ -14,9 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/hired")
-@Api(tags = "Hired Details", value = "HiredDetails",
-        description = "Controller for Hired Details update")
-
+@Api(tags = "Hired Details", value = "HiredDetails", description = "Controller for Hired Details update")
 public class HiredCandidateController {
 
     @Autowired
