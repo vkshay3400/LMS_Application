@@ -1,7 +1,8 @@
 package com.bridgelabz.lmsapi.controller;
 
+import com.bridgelabz.lmsapi.configuration.ApplicationConfig;
 import com.bridgelabz.lmsapi.dto.HiredCandidateDto;
-import com.bridgelabz.lmsapi.model.HiredCandidateDao;
+import com.bridgelabz.lmsapi.dto.ResponseDto;
 import com.bridgelabz.lmsapi.service.HiredCandidateService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,50 +21,85 @@ public class HiredCandidateController {
     @Autowired
     private HiredCandidateService service;
 
-    // API to put in db
+    /**
+     * API to save in db
+     *
+     * @param file
+     * @return
+     */
     @PostMapping(value = "/importhiredlist")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> importList(@RequestParam("file") MultipartFile file) {
-        service.getHiredCandidate(file);
-        return new ResponseEntity<>("Imported Successfully", HttpStatus.CREATED);
+    public ResponseEntity<ResponseDto> importList(@RequestParam("file") MultipartFile file) {
+        boolean imported = service.getHiredCandidate(file);
+        return new ResponseEntity<>(new ResponseDto(imported, ApplicationConfig
+                .getMessageAccessor().getMessage("106")), HttpStatus.CREATED);
     }
 
-    // API to get list
+    /**
+     * API to get list
+     *
+     * @return
+     */
     @GetMapping(value = "/allhiredcandidates")
     @ResponseStatus(HttpStatus.FOUND)
     public ResponseEntity<List> getAllCandidatesDetails() {
-        return new ResponseEntity<>(service.getList(), HttpStatus.FOUND);
+        List list = service.getList();
+        return new ResponseEntity<List>(list, HttpStatus.FOUND);
     }
 
-    // API to get candidate profile
+    /**
+     * API to get candidate profile
+     *
+     * @param id
+     * @return
+     */
     @GetMapping(value = "/hiredcandidatedetails")
     @ResponseStatus(HttpStatus.FOUND)
-    public ResponseEntity<HiredCandidateDao> getCandidateDetails(@RequestParam(value = "{id:[0-9]}") long id) {
-        return new ResponseEntity<>(service.findById(id), HttpStatus.FOUND);
+    public ResponseEntity<ResponseDto> getCandidateDetails(@RequestParam(value = "{id:[0-9]}") long id) {
+        return new ResponseEntity<>(new ResponseDto(service.findById(id), ApplicationConfig
+                .getMessageAccessor().getMessage("107")), HttpStatus.FOUND);
     }
 
-    // API to send mail to update candidate choice
+    /**
+     * API to send mail to update candidate choice
+     *
+     * @param hiredCandidateDto
+     * @return
+     */
     @PostMapping(value = "/sendmail")
     @ResponseStatus(HttpStatus.GONE)
-    public ResponseEntity<String> sendMail(@RequestBody HiredCandidateDto hiredCandidateDto) {
-        return new ResponseEntity<>(service.sendMail(hiredCandidateDto), HttpStatus.GONE);
+    public ResponseEntity<ResponseDto> sendMail(@RequestBody HiredCandidateDto hiredCandidateDto) {
+        return new ResponseEntity<>(new ResponseDto(service.sendMail(hiredCandidateDto), ApplicationConfig
+                .getMessageAccessor().getMessage("104")),HttpStatus.GONE);
     }
 
-    // API to update candidate status
+    /**
+     * API to update candidate status
+     *
+     * @param hiredCandidateDto
+     * @param choice
+     * @return
+     */
     @PutMapping(value = "/onboardstatus")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public ResponseEntity<String> onBoardStatus(@RequestBody HiredCandidateDto hiredCandidateDto,
-                                                @RequestParam(value = "{choice:[A-Z,a-z]}") String choice) {
+                                                @RequestParam(value = "choice") String choice) {
         service.getOnboardStatus(hiredCandidateDto, choice);
         return new ResponseEntity<>("Updated Status successfully", HttpStatus.ACCEPTED);
     }
 
-    // API to update candidate status
+    /**
+     * API to update candidate status
+     *
+     * @param hiredCandidateDto
+     * @return
+     */
     @PostMapping(value = "/sendjoboffer")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> sendJobOffer(@RequestBody HiredCandidateDto hiredCandidateDto) {
+    public ResponseEntity<ResponseDto> sendJobOffer(@RequestBody HiredCandidateDto hiredCandidateDto) {
         String mailMessage = service.sendJobOffer(hiredCandidateDto);
-        return new ResponseEntity<>(mailMessage, HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseDto(mailMessage, ApplicationConfig
+                .getMessageAccessor().getMessage("108")), HttpStatus.OK);
     }
 
 }
