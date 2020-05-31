@@ -26,4 +26,8 @@ public class BankDetailsDao {
     private LocalDateTime creatorStamp;
     private String creatorUser;
 
+    @ManyToOne(fetch = FetchType.LAZY,optional=false)
+    @JoinColumn(name = "candidateId", referencedColumnName = "id", insertable=false, updatable=false)
+    private FellowshipDao fellowshipDao;
+
 }

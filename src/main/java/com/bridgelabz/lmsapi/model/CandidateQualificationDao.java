@@ -2,9 +2,7 @@ package com.bridgelabz.lmsapi.model;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -34,4 +32,8 @@ public class CandidateQualificationDao implements Serializable{
     private String otherTraining;
     private LocalDateTime creatorStamp;
     private String creatorUser;
+
+    @ManyToOne(fetch = FetchType.LAZY,optional=false)
+    @JoinColumn(name = "candidateId", referencedColumnName = "id", insertable=false, updatable=false)
+    private FellowshipDao fellowshipDao;
 }
