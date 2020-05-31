@@ -38,7 +38,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Autowired
     private JwtUtil util;
 
-    // Method to load user by name
+    /**
+     * Method to load user by name
+     *
+     * @param userName
+     * @return
+     */
     @Override
     public UserDetails loadUserByUsername(String userName) {
         UserDao user = userRepository.findByFirstName(userName)
@@ -47,7 +52,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 new ArrayList<>());
     }
 
-    // Method to register user details
+    /**
+     * Method to register user details
+     *
+     * @param userDTO
+     * @return
+     */
     @Override
     public UserDao registerUser(UserDto userDTO) {
         UserDao userDao = modelMapper.map(userDTO, UserDao.class);
@@ -56,7 +66,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userDao;
     }
 
-    // Method to change password
+    /**
+     * Method to change password
+     *
+     * @param userDTO
+     * @param token
+     * @return
+     */
     @Override
     public UserDao changePassword(UserDto userDTO, String token) {
         String id = util.extractUserName(token);
@@ -66,7 +82,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.save(userDao);
     }
 
-    // Method to get token
+    /**
+     * Method to get token
+     *
+     * @param authenticationRequest
+     * @return
+     */
     @Override
     public String getToken(AuthenticationRequest authenticationRequest) {
         try {
@@ -80,7 +101,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return jwt;
     }
 
-    // Method to send mail on the user's mail
+    /**
+     * Method to send mail on the user's mail
+     *
+     * @param userDTO
+     * @return
+     */
     @Override
     public String sendMail(UserDto userDTO) {
         userDTO.setEmail(userDTO.getEmail());
@@ -105,7 +131,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    // Method to check user
+    /**
+     * Method to check user
+     *
+     * @param loginDTO
+     * @return
+     */
     @Override
     public boolean checkUser(LoginDto loginDTO) {
         UserDao userDao = userRepository.findByEmail(loginDTO.email).orElseThrow(() -> new LMSException(LMSException.exceptionType
@@ -114,4 +145,5 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             return true;
         throw new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found");
     }
+
 }

@@ -12,6 +12,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -41,9 +42,23 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
     @Autowired
     HiredCandidateDto hiredCandidateDTO;
 
-    // Method to get details from excel sheet
+    @Value("${choice.accept}")
+    private String accept;
+
+    @Value("${choice.reject}")
+    private String reject;
+
+    @Value("${choice.pending}")
+    private String pending;
+
+    /**
+     * Method to get details from excel sheet
+     *
+     * @param filePath
+     * @return
+     */
     @Override
-    public void getHiredCandidate(MultipartFile filePath) {
+    public boolean getHiredCandidate(MultipartFile filePath) {
         List candidateList = new ArrayList();
         boolean flag = true;
         try (InputStream fileInputStream = filePath.getInputStream()) {
@@ -71,50 +86,55 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
             e.printStackTrace();
         }
         saveCandidateDetails(candidateList);
+        return flag;
     }
 
-    // Method to save details in database
+    /**
+     * Method to save details in database
+     *
+     * @param candidateList
+     */
     @Override
     public void saveCandidateDetails(List<List<XSSFCell>> candidateList) {
         XSSFCell cell;
 
         for (List<XSSFCell> list : candidateList) {
             int index = 0;
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setId((long) cell.getNumericCellValue());
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setFirstName(cell.getStringCellValue());
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setMiddleName(cell.getStringCellValue());
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setLastName(cell.getStringCellValue());
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setEmail(cell.getStringCellValue());
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setHiredCity(cell.getStringCellValue());
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setDegree(cell.getStringCellValue());
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setHiredDate(cell.getDateCellValue());
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setMobileNumber((long) cell.getNumericCellValue());
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setPermanentPincode((long) cell.getNumericCellValue());
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setHiredLab(cell.getStringCellValue());
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setAttitude(cell.getStringCellValue());
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setCommunicationRemark(cell.getStringCellValue());
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setKnowledgeRemark(cell.getStringCellValue());
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setAggregateRemark(cell.getStringCellValue());
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setStatus(cell.getStringCellValue());
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setCreatorStamp(cell.getDateCellValue());
-            cell = (XSSFCell) list.get(index++);
+            cell = list.get(index++);
             hiredCandidateDTO.setCreatorUser(cell.getStringCellValue());
 
             HiredCandidateDao hiredCandidateDao = modelMapper.map(hiredCandidateDTO, HiredCandidateDao.class);
@@ -124,7 +144,11 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
         }
     }
 
-    // Method to get list of hired candidates
+    /**
+     * Method to get list of hired candidates
+     *
+     * @return
+     */
     @Override
     public List getList() {
         List<HiredCandidateDao> list = hiredCandidateRepository.findAll();
@@ -133,14 +157,24 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
         return list;
     }
 
-    // Method to get profile of hired candidate
+    /**
+     * Method to get profile of hired candidate
+     *
+     * @param id
+     * @return
+     */
     @Override
     public HiredCandidateDao findById(long id) {
         return hiredCandidateRepository.findById(id)
                 .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
     }
 
-    // Method to send mail on the user's mail
+    /**
+     * Method to send mail on the user's mail
+     *
+     * @param hiredCandidateDto
+     * @return
+     */
     @Override
     public String sendMail(HiredCandidateDto hiredCandidateDto) {
         hiredCandidateDto.setEmail(hiredCandidateDto.getEmail());
@@ -161,32 +195,43 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
         return new String("Mail sent successfully");
     }
 
-    // Method to change onboard status
+    /**
+     * Method to change onboard status
+     *
+     * @param hiredCandidateDto
+     * @param choice
+     * @return
+     */
     @Override
     public HiredCandidateDao getOnboardStatus(HiredCandidateDto hiredCandidateDto, String choice) {
         HiredCandidateDao hiredCandidateDao = hiredCandidateRepository.findById(hiredCandidateDto.getId())
                 .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
         switch (choice) {
-            case "Accept":
-                hiredCandidateDao.setStatus("Accept");
+            case "accept":
+                hiredCandidateDao.setStatus(accept);
                 hiredCandidateRepository.save(hiredCandidateDao);
                 break;
-            case "Reject":
-                hiredCandidateDao.setStatus("Reject");
+            case "reject":
+                hiredCandidateDao.setStatus(reject);
                 break;
             default:
-                hiredCandidateDao.setStatus("Pending");
+                hiredCandidateDao.setStatus(pending);
                 break;
         }
         return hiredCandidateRepository.save(hiredCandidateDao);
     }
 
-    // Method to send job offer
+    /**
+     * Method to send job offer
+     *
+     * @param hiredCandidateDto
+     * @return
+     */
     @Override
     public String sendJobOffer(HiredCandidateDto hiredCandidateDto) {
         HiredCandidateDao hiredCandidateDao = hiredCandidateRepository.findById(hiredCandidateDto.getId())
                 .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
-        if (hiredCandidateDao.getStatus().matches("Accept")) {
+        if (hiredCandidateDao.getStatus().matches(accept)) {
             hiredCandidateDao = hiredCandidateRepository.findByEmail(hiredCandidateDto.getEmail())
                     .orElseThrow(() -> new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found"));
             SimpleMailMessage mail = new SimpleMailMessage();
@@ -207,4 +252,5 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
         }
         return new String("Candidate Status is not Accept");
     }
+
 }

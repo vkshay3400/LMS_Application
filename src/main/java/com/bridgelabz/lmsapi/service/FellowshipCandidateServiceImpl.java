@@ -1,11 +1,19 @@
 package com.bridgelabz.lmsapi.service;
 
+import com.bridgelabz.lmsapi.dto.BankDetailsDto;
+import com.bridgelabz.lmsapi.dto.CandidateQualificationDto;
 import com.bridgelabz.lmsapi.dto.PersonalDetailsDto;
 import com.bridgelabz.lmsapi.exception.LMSException;
+import com.bridgelabz.lmsapi.model.BankDetailsDao;
+import com.bridgelabz.lmsapi.model.CandidateQualificationDao;
 import com.bridgelabz.lmsapi.model.HiredCandidateDao;
 import com.bridgelabz.lmsapi.model.FellowshipDao;
+import com.bridgelabz.lmsapi.repository.BankDetailsRepository;
+import com.bridgelabz.lmsapi.repository.CandidateQualificationRepository;
 import com.bridgelabz.lmsapi.repository.FellowshipCandidateRepository;
 import com.bridgelabz.lmsapi.repository.HiredCandidateRepository;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,10 +23,15 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class FellowshipCandidateServiceImpl implements FellowshipCandidateService {
+
+    @Autowired
+    private Cloudinary cloudinaryConfig;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -27,14 +40,24 @@ public class FellowshipCandidateServiceImpl implements FellowshipCandidateServic
     private HiredCandidateRepository hiredCandidateRepository;
 
     @Autowired
+    private BankDetailsRepository bankDetailsRepository;
+
+    @Autowired
+    private CandidateQualificationRepository candidateQualificationRepository;
+
+    @Autowired
     private FellowshipCandidateRepository fellowshipCandidateRepository;
 
     @Value("${upload.path}")
     private String path;
 
-    // Method to save data in fellowship database table
+    /**
+     * Method to save data in fellowship database table
+     *
+     * @return
+     */
     @Override
-    public void getDetails() {
+    public boolean getDetails() {
         try {
             List<HiredCandidateDao> list = hiredCandidateRepository.findAll();
             for (HiredCandidateDao candidate : list) {
@@ -47,9 +70,14 @@ public class FellowshipCandidateServiceImpl implements FellowshipCandidateServic
         } catch (LMSException e) {
             throw new LMSException(LMSException.exceptionType.INVALID_ID, e.getMessage());
         }
+        return false;
     }
 
-    // Method to get count from fellowship database table
+    /**
+     * Method to get count from fellowship database table
+     *
+     * @return
+     */
     @Override
     public int getFellowshipCount() {
         try {
@@ -60,9 +88,15 @@ public class FellowshipCandidateServiceImpl implements FellowshipCandidateServic
         }
     }
 
-    // Method to update profile
+    /**
+     * Method to update profile
+     *
+     * @param personalDetailsDto
+     * @param id
+     * @return
+     */
     @Override
-    public void getUpdateDetails(PersonalDetailsDto personalDetailsDto, long id) {
+    public boolean getUpdateDetails(PersonalDetailsDto personalDetailsDto, long id) {
         try {
             fellowshipCandidateRepository.findById(id).map(fellowshipDao -> {
                 fellowshipDao.setBirthDate(personalDetailsDto.getBirthDate());
@@ -80,9 +114,51 @@ public class FellowshipCandidateServiceImpl implements FellowshipCandidateServic
         } catch (LMSException e) {
             throw new LMSException(LMSException.exceptionType.INVALID_ID, e.getMessage());
         }
+        return false;
     }
 
-    // Method to upload documents
+    /**
+     * Method to update bank details
+     *
+     * @param bankDetailsDto
+     * @return
+     */
+    @Override
+    public boolean saveBankDetails(BankDetailsDto bankDetailsDto) {
+        fellowshipCandidateRepository.findById(bankDetailsDto.getCandidateId())
+                .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
+        BankDetailsDao bankDetailsDao = modelMapper
+                .map(bankDetailsDto, BankDetailsDao.class);
+        bankDetailsDao.setCreatorStamp(LocalDateTime.now());
+        bankDetailsRepository.save(bankDetailsDao);
+        return true;
+    }
+
+    /**
+     * Method to update education details
+     *
+     * @param candidateQualificationDto
+     * @return
+     */
+    @Override
+    public boolean saveEducationDetails(CandidateQualificationDto candidateQualificationDto) {
+        fellowshipCandidateRepository.findById(candidateQualificationDto.getCandidateId())
+                .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
+        CandidateQualificationDao candidateQualificationDao = modelMapper
+                .map(candidateQualificationDto, CandidateQualificationDao.class);
+        candidateQualificationDao.setCreatorStamp(LocalDateTime.now());
+        candidateQualificationRepository.save(candidateQualificationDao);
+        return true;
+    }
+
+    /**
+     * Method to upload documents in system
+     *
+     * @param file
+     * @param id
+     * @throws LMSException
+     * @throws IOException
+     */
     @Override
     public void upload(MultipartFile file, long id) throws LMSException, IOException {
         fellowshipCandidateRepository.findById(id)
@@ -93,7 +169,46 @@ public class FellowshipCandidateServiceImpl implements FellowshipCandidateServic
         convertFile.createNewFile();
         FileOutputStream fout = new FileOutputStream(convertFile);
         fout.write(file.getBytes());
+
         fout.close();
+    }
+
+    /**
+     * Method to upload documents
+     *
+     * @param file
+     * @param id
+     * @return
+     */
+    @Override
+    public String uploadFile(MultipartFile file, long id) {
+        try {
+            fellowshipCandidateRepository.findById(id)
+                    .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
+            if (file.isEmpty())
+                throw new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Failed to store empty file");
+            File uploadedFile = convertMultiPartToFile(file);
+            Map uploadResult = cloudinaryConfig.uploader().upload(uploadedFile, ObjectUtils.emptyMap());
+            return  uploadResult.get("url").toString();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Method to convert multipart to file
+     *
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public File convertMultiPartToFile(MultipartFile file) throws IOException {
+        File convertFile = new File(file.getOriginalFilename());
+        FileOutputStream fos = new FileOutputStream(convertFile);
+        fos.write(file.getBytes());
+        fos.close();
+        return convertFile;
     }
 
 }
