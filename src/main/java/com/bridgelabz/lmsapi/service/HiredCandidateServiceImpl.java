@@ -1,5 +1,6 @@
 package com.bridgelabz.lmsapi.service;
 
+import com.bridgelabz.lmsapi.configuration.ApplicationConfig;
 import com.bridgelabz.lmsapi.dto.HiredCandidateDto;
 import com.bridgelabz.lmsapi.exception.LMSException;
 import com.bridgelabz.lmsapi.model.HiredCandidateDao;
@@ -132,10 +133,6 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
             hiredCandidateDTO.setAggregateRemark(cell.getStringCellValue());
             cell = list.get(index++);
             hiredCandidateDTO.setStatus(cell.getStringCellValue());
-            cell = list.get(index++);
-            hiredCandidateDTO.setCreatorStamp(cell.getDateCellValue());
-            cell = list.get(index++);
-            hiredCandidateDTO.setCreatorUser(cell.getStringCellValue());
 
             HiredCandidateDao hiredCandidateDao = modelMapper.map(hiredCandidateDTO, HiredCandidateDao.class);
             if (hiredCandidateDao.equals(null))
@@ -192,7 +189,7 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
                 "Link: http://localhost:8080/hired/onboardstatus/choice?= {Your choice} ");
 
         javaMailSender.send(mail);
-        return new String("Mail sent successfully");
+        return new String(ApplicationConfig.getMessageAccessor().getMessage("104"));
     }
 
     /**
@@ -248,9 +245,9 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
             if (fellowshipDao.equals(null))
                 throw new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found");
             fellowshipCandidateRepository.save(fellowshipDao);
-            return new String("Mail sent successfully");
+            return new String(ApplicationConfig.getMessageAccessor().getMessage("104"));
         }
-        return new String("Candidate Status is not Accept");
+        return new String(ApplicationConfig.getMessageAccessor().getMessage("114"));
     }
 
 }
