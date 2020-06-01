@@ -3,17 +3,12 @@ package com.bridgelabz.lmsapi.service;
 import com.bridgelabz.lmsapi.dto.BankDetailsDto;
 import com.bridgelabz.lmsapi.dto.CandidateQualificationDto;
 import com.bridgelabz.lmsapi.dto.PersonalDetailsDto;
+import com.bridgelabz.lmsapi.dto.UploadDocumentsDto;
 import com.bridgelabz.lmsapi.exception.LMSException;
-import com.bridgelabz.lmsapi.model.BankDetailsDao;
-import com.bridgelabz.lmsapi.model.CandidateQualificationDao;
-import com.bridgelabz.lmsapi.model.HiredCandidateDao;
-import com.bridgelabz.lmsapi.model.FellowshipDao;
-import com.bridgelabz.lmsapi.repository.BankDetailsRepository;
-import com.bridgelabz.lmsapi.repository.CandidateQualificationRepository;
-import com.bridgelabz.lmsapi.repository.FellowshipCandidateRepository;
-import com.bridgelabz.lmsapi.repository.HiredCandidateRepository;
+import com.bridgelabz.lmsapi.model.*;
+import com.bridgelabz.lmsapi.repository.*;
 import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +42,9 @@ public class FellowshipCandidateServiceImpl implements FellowshipCandidateServic
 
     @Autowired
     private FellowshipCandidateRepository fellowshipCandidateRepository;
+
+    @Autowired
+    private UploadDocumentsRepository uploadDocumentsRepository;
 
     @Value("${upload.path}")
     private String path;
@@ -129,7 +127,6 @@ public class FellowshipCandidateServiceImpl implements FellowshipCandidateServic
                 .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
         BankDetailsDao bankDetailsDao = modelMapper
                 .map(bankDetailsDto, BankDetailsDao.class);
-        bankDetailsDao.setCreatorStamp(LocalDateTime.now());
         bankDetailsRepository.save(bankDetailsDao);
         return true;
     }
@@ -146,7 +143,6 @@ public class FellowshipCandidateServiceImpl implements FellowshipCandidateServic
                 .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
         CandidateQualificationDao candidateQualificationDao = modelMapper
                 .map(candidateQualificationDto, CandidateQualificationDao.class);
-        candidateQualificationDao.setCreatorStamp(LocalDateTime.now());
         candidateQualificationRepository.save(candidateQualificationDao);
         return true;
     }
@@ -156,11 +152,12 @@ public class FellowshipCandidateServiceImpl implements FellowshipCandidateServic
      *
      * @param file
      * @param id
+     * @return
      * @throws LMSException
      * @throws IOException
      */
     @Override
-    public void upload(MultipartFile file, long id) throws LMSException, IOException {
+    public boolean upload(MultipartFile file, long id) throws LMSException, IOException {
         fellowshipCandidateRepository.findById(id)
                 .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
         if (file.isEmpty())
@@ -171,25 +168,34 @@ public class FellowshipCandidateServiceImpl implements FellowshipCandidateServic
         fout.write(file.getBytes());
 
         fout.close();
+        return false;
     }
 
     /**
      * Method to upload documents
      *
      * @param file
-     * @param id
+     * @param updateDocumentDto
      * @return
      */
     @Override
-    public String uploadFile(MultipartFile file, long id) {
+    public String uploadFile(MultipartFile file, String updateDocumentDto) {
         try {
-            fellowshipCandidateRepository.findById(id)
+            UploadDocumentsDto uploadDocumentsDto = new ObjectMapper().readValue(updateDocumentDto, UploadDocumentsDto.class);
+            fellowshipCandidateRepository.findById(uploadDocumentsDto.getId())
                     .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
             if (file.isEmpty())
                 throw new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Failed to store empty file");
+            Map<Object, Object> parameters = new HashMap<>();
+            parameters.put("public_id", "CandidateDocuments/" + uploadDocumentsDto.getId() + "/" + file.getOriginalFilename());
             File uploadedFile = convertMultiPartToFile(file);
-            Map uploadResult = cloudinaryConfig.uploader().upload(uploadedFile, ObjectUtils.emptyMap());
-            return  uploadResult.get("url").toString();
+            Map uploadResult = cloudinaryConfig.uploader().upload(uploadedFile, parameters);
+            String url = uploadResult.get("url").toString();
+            uploadDocumentsDto.setDocumentPath(url);
+            UploadDocumentsDao uploadDocumentsDao = modelMapper
+                    .map(uploadDocumentsDto, UploadDocumentsDao.class);
+            uploadDocumentsRepository.save(uploadDocumentsDao);
+            return url;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

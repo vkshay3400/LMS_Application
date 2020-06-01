@@ -17,11 +17,11 @@ public interface FellowshipCandidateService {
 
     boolean getUpdateDetails(PersonalDetailsDto personalDetailsDto, long id);
 
-    void upload(MultipartFile file, long id) throws LMSException, IOException;
+    boolean upload(MultipartFile file, long id) throws LMSException, IOException;
 
     File convertMultiPartToFile(MultipartFile file) throws IOException;
 
-    String uploadFile(MultipartFile file, long id);
+    String uploadFile(MultipartFile file, String updateDocumentDto);
 
     boolean saveBankDetails(BankDetailsDto bankDetailsDto);
 
