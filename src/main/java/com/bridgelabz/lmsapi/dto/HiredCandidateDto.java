@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Component
@@ -37,9 +38,7 @@ public class HiredCandidateDto {
     private String knowledgeRemark;
     private String aggregateRemark;
     private String status;
-    @NotNull
-    private Date creatorStamp;
-    @NotNull
-    private String creatorUser;
+    private LocalDateTime creatorStamp;
+    private long creatorUser;
 
 }

@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -28,8 +29,8 @@ public class FellowshipDao implements Serializable {
     private String communicationRemark;
     private String knowledgeRemark;
     private String aggregateRemark;
-    private Date creatorStamp;
-    private String creatorUser;
+    private LocalDateTime creatorStamp;
+    private long creatorUser;
     private Date birthDate;
     private String isBirthDateVerified;
     private String parentName;
@@ -43,4 +44,19 @@ public class FellowshipDao implements Serializable {
     private String candidateStatus;
     private String remark;
 
+    public LocalDateTime getCreatorStamp() {
+        return creatorStamp;
+    }
+
+    public void setCreatorStamp(LocalDateTime creatorStamp) {
+        this.creatorStamp = LocalDateTime.now();
+    }
+
+    public long getCreatorUser() {
+        return creatorUser;
+    }
+
+    public void setCreatorUser(long creatorUser) {
+        this.creatorUser = this.id;
+    }
 }

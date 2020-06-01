@@ -23,6 +23,22 @@ public class UserDao implements Serializable {
     private long contactNumber;
     private String verified;
     private LocalDateTime creatorStamp;
-    private String creatorUser;
+    private long creatorUser;
+
+    public LocalDateTime getCreatorStamp() {
+        return creatorStamp;
+    }
+
+    public void setCreatorStamp(LocalDateTime creatorStamp) {
+        this.creatorStamp = LocalDateTime.now();
+    }
+
+    public long getCreatorUser() {
+        return creatorUser;
+    }
+
+    public void setCreatorUser(long creatorUser) {
+        this.creatorUser = this.id;
+    }
 
 }

@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -34,8 +35,8 @@ public class FellowshipDto {
     private String communicationRemark;
     private String knowledgeRemark;
     private String aggregateRemark;
-    private Date creatorStamp;
-    private String creatorUser;
+    private LocalDateTime creatorStamp;
+    private long creatorUser;
     private Date birthDate;
     private String isBirthDateVerified;
     private String parentName;

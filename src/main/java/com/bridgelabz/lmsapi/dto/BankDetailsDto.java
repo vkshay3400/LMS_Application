@@ -2,7 +2,6 @@ package com.bridgelabz.lmsapi.dto;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
-
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -32,9 +31,7 @@ public class BankDetailsDto {
     private long addhaarNumber;
     @NotNull
     private String isAddhaarNumVerified;
-    @NotNull
     private LocalDateTime creatorStamp;
-    @NotNull
-    private String creatorUser;
+    private long creatorUser;
 
 }

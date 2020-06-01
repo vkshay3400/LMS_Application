@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -28,7 +29,23 @@ public class HiredCandidateDao implements Serializable{
     private String knowledgeRemark;
     private String aggregateRemark;
     private String status;
-    private Date creatorStamp;
-    private String creatorUser;
+    private LocalDateTime creatorStamp;
+    private long creatorUser;
+
+    public LocalDateTime getCreatorStamp() {
+        return creatorStamp;
+    }
+
+    public void setCreatorStamp(LocalDateTime creatorStamp) {
+        this.creatorStamp = LocalDateTime.now();
+    }
+
+    public long getCreatorUser() {
+        return creatorUser;
+    }
+
+    public void setCreatorUser(long creatorUser) {
+        this.creatorUser = this.id;
+    }
 
 }

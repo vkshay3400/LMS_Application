@@ -32,7 +32,6 @@ public class CandidateQualificationDto {
     private String isOtherTrainingVerified;
     private String otherTraining;
     private LocalDateTime creatorStamp;
-    @NotNull(message = "Creator User is required")
-    private String creatorUser;
+    private long creatorUser;
 
 }
