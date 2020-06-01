@@ -1,10 +1,7 @@
 package com.bridgelabz.lmsapi.controller;
 
 import com.bridgelabz.lmsapi.configuration.ApplicationConfig;
-import com.bridgelabz.lmsapi.dto.BankDetailsDto;
-import com.bridgelabz.lmsapi.dto.CandidateQualificationDto;
-import com.bridgelabz.lmsapi.dto.PersonalDetailsDto;
-import com.bridgelabz.lmsapi.dto.ResponseDto;
+import com.bridgelabz.lmsapi.dto.*;
 import com.bridgelabz.lmsapi.service.FellowshipCandidateService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +56,7 @@ public class FellowshipCandidateController {
     @PutMapping(value = "/updatedetails")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<ResponseDto> updateDetails(@RequestBody PersonalDetailsDto personalDetailsDto,
-                                                @RequestParam("{id:[0-9]}") long id) {
+                                                @RequestParam("id") long id) {
         boolean updateDetails = service.getUpdateDetails(personalDetailsDto, id);
         return new ResponseEntity<>(new ResponseDto(updateDetails, ApplicationConfig
         .getMessageAccessor().getMessage("110")), HttpStatus.CREATED);
@@ -101,26 +98,22 @@ public class FellowshipCandidateController {
      * @return
      * @throws Exception
      */
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/uploadfile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Object> uploadFileInSystem(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<ResponseDto> uploadFileInSystem(@RequestParam("file") MultipartFile file,
                                              @RequestParam(value = "id") Long id) throws Exception {
-        service.upload(file, id);
-        return new ResponseEntity<>("File uploaded successfully", HttpStatus.OK);
+        boolean upload = service.upload(file, id);
+        return new ResponseEntity(new ResponseDto(upload, ApplicationConfig
+                .getMessageAccessor().getMessage("113")), HttpStatus.GONE);
     }
 
-    /**
-     * API for upload
-     *
-     * @param file
-     * @param id
-     * @return
-     */
-    @PostMapping("/upload")
-    public String uploadFile(@RequestParam("file") MultipartFile file,
-                             @RequestParam(value = "id") Long id) {
-        String url = service.uploadFile(file, id);
-        return "File uploaded successfully: File path :  " + url;
+
+    @PostMapping(value = "/upload")
+    public ResponseEntity<ResponseDto> uploadFile(@RequestParam("file") MultipartFile file,
+                                                  @RequestParam(value = "updateDocumentDto") String updateDocumentDto) {
+        String url = service.uploadFile(file, updateDocumentDto);
+        return new ResponseEntity(new ResponseDto(url, ApplicationConfig
+        .getMessageAccessor().getMessage("113")), HttpStatus.GONE);
     }
 
 }
