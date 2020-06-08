@@ -42,27 +42,13 @@ public class UserController {
      * @return
      * @throws Exception
      */
-    @PostMapping(value = "/authenticate")
+    @PostMapping(value = "/login")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<ResponseDto> createAuthenticationToken(@RequestBody AuthenticationRequest
                                                                              authenticationRequest) throws Exception {
         String token = service.getToken(authenticationRequest);
         return new ResponseEntity<>(new ResponseDto(token, ApplicationConfig
                 .getMessageAccessor().getMessage("102")), HttpStatus.CREATED);
-    }
-
-    /**
-     * API for login user
-     *
-     * @param loginDto
-     * @return
-     */
-    @GetMapping(value = "/login")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<ResponseDto> login(@RequestBody LoginDto loginDto) {
-        boolean userId = service.checkUser(loginDto);
-        return new ResponseEntity<>(new ResponseDto(userId,ApplicationConfig
-                .getMessageAccessor().getMessage("103")), HttpStatus.OK);
     }
 
     /**
@@ -92,5 +78,4 @@ public class UserController {
         return new ResponseEntity<>(new ResponseDto(service.changePassword(userDto,token), ApplicationConfig
         .getMessageAccessor().getMessage("105")),HttpStatus.CREATED);
     }
-
 }
