@@ -1,17 +1,17 @@
 package com.bridgelabz.lmsapi.service;
 
-import com.bridgelabz.lmsapi.dto.LoginDto;
+import com.bridgelabz.lmsapi.configuration.ApplicationConfig;
+import com.bridgelabz.lmsapi.dto.MailDto;
 import com.bridgelabz.lmsapi.dto.UserDto;
 import com.bridgelabz.lmsapi.exception.LMSException;
 import com.bridgelabz.lmsapi.model.AuthenticationRequest;
 import com.bridgelabz.lmsapi.model.UserDao;
 import com.bridgelabz.lmsapi.repository.UserRepository;
 import com.bridgelabz.lmsapi.util.JwtUtil;
+import com.bridgelabz.lmsapi.util.RabbitMq;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,16 +20,14 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final String rediskey = "Key";
 
     @Autowired
-    private JavaMailSender javaMailSender;
+    private ModelMapper modelMapper;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -39,10 +37,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private JwtUtil util;
+
     @Autowired
     private RedisTemplate<String, UserDao> redisTemplate;
 
-    private String rediskey = "Key";
+    @Autowired
+    private RabbitMq rabbitMq;
+
+    @Autowired
+    private MailDto mailDto;
 
     /**
      * Method to load user by name
@@ -89,30 +92,25 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     /**
-     * Method to send mail on the user's mail
+     * Method to send mail on the user's mail for reset password
      *
      * @param userDTO
      * @return
      */
     @Override
     public String sendMail(UserDto userDTO) {
-        userDTO.setEmail(userDTO.getEmail());
-        userDTO.setFirstName(userDTO.getFirstName());
-        userDTO.setLastName(userDTO.getLastName());
-
         try {
             UserDao user = userRepository.findByEmail(userDTO.getEmail())
                     .orElseThrow(() -> new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found"));
-            SimpleMailMessage mail = new SimpleMailMessage();
-            mail.setTo(userDTO.getEmail());
-            mail.setFrom("${gmail.username}");
-            mail.setSubject("Regarding reset password ");
-            mail.setText("Hello " + userDTO.getFirstName() + " please reset your password using the link and token " +
+
+            mailDto.setTo(userDTO.getEmail());
+            mailDto.setBody("Hello " + userDTO.getFirstName() + " please reset your password using the link and token " +
                     "Link: http://localhost:8080/changepassword " + "Use your email and a new password and use the token " +
                     "token: " + util.getToken(user.getId()));
-
-            javaMailSender.send(mail);
-            return new String("Mail sent successfully");
+            mailDto.setSubject("Regarding reset password");
+            mailDto.setFrom("${gmail.username}");
+            rabbitMq.sendMail(mailDto);
+            return ApplicationConfig.getMessageAccessor().getMessage("104");
         } catch (LMSException e) {
             throw new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, e.getMessage());
         }

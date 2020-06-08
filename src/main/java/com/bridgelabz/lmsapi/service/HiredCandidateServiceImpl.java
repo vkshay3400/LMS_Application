@@ -2,11 +2,13 @@ package com.bridgelabz.lmsapi.service;
 
 import com.bridgelabz.lmsapi.configuration.ApplicationConfig;
 import com.bridgelabz.lmsapi.dto.HiredCandidateDto;
+import com.bridgelabz.lmsapi.dto.MailDto;
 import com.bridgelabz.lmsapi.exception.LMSException;
-import com.bridgelabz.lmsapi.model.HiredCandidateDao;
 import com.bridgelabz.lmsapi.model.FellowshipDao;
+import com.bridgelabz.lmsapi.model.HiredCandidateDao;
 import com.bridgelabz.lmsapi.repository.FellowshipCandidateRepository;
 import com.bridgelabz.lmsapi.repository.HiredCandidateRepository;
+import com.bridgelabz.lmsapi.util.RabbitMq;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -14,19 +16,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import javax.naming.Context;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,22 +29,16 @@ import java.util.List;
 public class HiredCandidateServiceImpl implements HiredCandidateService {
 
     @Autowired
-    private ModelMapper modelMapper;
-
-//    @Autowired
-//    private SpringTemplateEngine templateEngine;
+    HiredCandidateDto hiredCandidateDTO;
 
     @Autowired
-    private JavaMailSender javaMailSender;
+    private ModelMapper modelMapper;
 
     @Autowired
     private HiredCandidateRepository hiredCandidateRepository;
 
     @Autowired
     private FellowshipCandidateRepository fellowshipCandidateRepository;
-
-    @Autowired
-    HiredCandidateDto hiredCandidateDTO;
 
     @Value("${choice.accept}")
     private String accept;
@@ -60,6 +48,12 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
 
     @Value("${choice.pending}")
     private String pending;
+
+    @Autowired
+    private RabbitMq rabbitMq;
+
+    @Autowired
+    private MailDto mailDto;
 
     /**
      * Method to get details from excel sheet
@@ -151,6 +145,27 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
     }
 
     /**
+     * Method to send mail on the user's mail for choice
+     *
+     * @param hiredCandidateDto
+     * @return
+     */
+    @Override
+    public String sendMail(HiredCandidateDto hiredCandidateDto) {
+
+        String Accepted = "<html><body><p><a href='http://localhost:8080/hiredcandidate/updatestatus?response=ACCEPTED&email=" + hiredCandidateDto.getEmail();
+        String Rejected = "<html><body><p><a href='http://localhost:8080/hiredcandidate/updatestatus?response=REJECTED&email=" + hiredCandidateDto.getEmail();
+        mailDto.setTo(hiredCandidateDto.getEmail());
+        mailDto.setBody("Hii, " + hiredCandidateDto.getFirstName() + " " + hiredCandidateDto.getLastName() + " " +
+                "You have been selected to our Fellowship Program. please click on the following " +
+                "link to accept the offer. " + "\n" + Accepted + "\nPlease click on following link to reject the offer. " + "\n" + Rejected);
+        mailDto.setSubject("Regarding your choice for joining");
+        mailDto.setFrom("${gmail.username}");
+        rabbitMq.sendMail(mailDto);
+        return new String(ApplicationConfig.getMessageAccessor().getMessage("104"));
+    }
+
+    /**
      * Method to get list of hired candidates
      *
      * @return
@@ -173,32 +188,6 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
     public HiredCandidateDao findById(long id) {
         return hiredCandidateRepository.findById(id)
                 .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
-    }
-
-    /**
-     * Method to send mail on the user's mail
-     *
-     * @param hiredCandidateDto
-     * @return
-     */
-    @Override
-    public String sendMail(HiredCandidateDto hiredCandidateDto) {
-        hiredCandidateDto.setEmail(hiredCandidateDto.getEmail());
-        hiredCandidateDto.setFirstName(hiredCandidateDto.getFirstName());
-        hiredCandidateDto.setLastName(hiredCandidateDto.getLastName());
-
-        HiredCandidateDao hiredCandidateDao = hiredCandidateRepository.findByEmail(hiredCandidateDto.getEmail())
-                .orElseThrow(() -> new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found"));
-        SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setTo(hiredCandidateDto.getEmail());
-        mail.setFrom("${gmail.username}");
-        mail.setSubject("Regarding your choice for joining ");
-        mail.setText("Hello " + hiredCandidateDto.getFirstName() + " please select your choice: Accept or Reject to " +
-                "join the fellowship program and click on the link and put your choice " +
-                "Link: http://localhost:8080/hired/onboardstatus/choice?= {Your choice} ");
-
-        javaMailSender.send(mail);
-        return new String(ApplicationConfig.getMessageAccessor().getMessage("104"));
     }
 
     /**
@@ -240,13 +229,12 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
         if (hiredCandidateDao.getStatus().matches(accept)) {
             hiredCandidateDao = hiredCandidateRepository.findByEmail(hiredCandidateDto.getEmail())
                     .orElseThrow(() -> new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found"));
-            SimpleMailMessage mail = new SimpleMailMessage();
-            mail.setTo(hiredCandidateDto.getEmail());
-            mail.setFrom("${gmail.username}");
-            mail.setSubject("Regarding your job offer");
-            mail.setText("Hello " + hiredCandidateDto.getFirstName() + " Congratulations...!! " +
+            mailDto.setTo(hiredCandidateDto.getEmail());
+            mailDto.setBody("Hello " + hiredCandidateDto.getFirstName() + " Congratulations...!! " +
                     "You are selected for the fellowship program... ");
-            javaMailSender.send(mail);
+            mailDto.setSubject("Regarding your job offer");
+            mailDto.setFrom("${gmail.username}");
+            rabbitMq.sendMail(mailDto);
 
             // To save data in fellowship database table
             FellowshipDao fellowshipDao = new FellowshipDao();
@@ -258,5 +246,4 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
         }
         return new String(ApplicationConfig.getMessageAccessor().getMessage("114"));
     }
-
 }
