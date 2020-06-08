@@ -7,6 +7,8 @@ import com.bridgelabz.lmsapi.model.UserDao;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.Map;
+
 public interface UserService {
 
     UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException;
@@ -18,7 +20,5 @@ public interface UserService {
     String getToken(AuthenticationRequest authenticationRequest) throws Exception;
 
     String sendMail(UserDto userDTO);
-
-    boolean checkUser(LoginDto loginDTO);
 
 }
