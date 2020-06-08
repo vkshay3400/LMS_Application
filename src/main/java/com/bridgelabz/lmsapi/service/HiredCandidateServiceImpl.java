@@ -16,11 +16,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import javax.naming.Context;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +36,9 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+//    @Autowired
+//    private SpringTemplateEngine templateEngine;
 
     @Autowired
     private JavaMailSender javaMailSender;

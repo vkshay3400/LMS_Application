@@ -5,6 +5,7 @@ import com.bridgelabz.lmsapi.model.HiredCandidateDao;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface HiredCandidateService {
 
     HiredCandidateDao findById(long id);
 
-    String sendMail(HiredCandidateDto hiredCandidateDto);
+    String sendMail(HiredCandidateDto hiredCandidateDto) throws MessagingException;
 
     HiredCandidateDao getOnboardStatus(HiredCandidateDto hiredCandidateDto, String choice);
 
