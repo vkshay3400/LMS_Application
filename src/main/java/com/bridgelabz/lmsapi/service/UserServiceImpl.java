@@ -1,14 +1,15 @@
 package com.bridgelabz.lmsapi.service;
 
+import com.bridgelabz.lmsapi.dto.LoginDto;
 import com.bridgelabz.lmsapi.dto.UserDto;
 import com.bridgelabz.lmsapi.exception.LMSException;
 import com.bridgelabz.lmsapi.model.AuthenticationRequest;
-import com.bridgelabz.lmsapi.dto.LoginDto;
 import com.bridgelabz.lmsapi.model.UserDao;
 import com.bridgelabz.lmsapi.repository.UserRepository;
 import com.bridgelabz.lmsapi.util.JwtUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -37,6 +39,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private JwtUtil util;
+    @Autowired
+    private RedisTemplate<String, UserDao> redisTemplate;
+
+    private String rediskey = "Key";
 
     /**
      * Method to load user by name
@@ -83,25 +89,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     /**
-     * Method to get token
-     *
-     * @param authenticationRequest
-     * @return
-     */
-    @Override
-    public String getToken(AuthenticationRequest authenticationRequest) {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
-                    authenticationRequest.getPassword()));
-        } catch (LMSException e) {
-            throw new LMSException(LMSException.exceptionType.INVALID_PASSWORD, e.getMessage());
-        }
-        final UserDetails userDetails = loadUserByUsername(authenticationRequest.getUsername());
-        final String jwt = util.generateToken(userDetails);
-        return jwt;
-    }
-
-    /**
      * Method to send mail on the user's mail
      *
      * @param userDTO
@@ -132,18 +119,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     /**
-     * Method to check user
+     * Method to get Token
      *
-     * @param loginDTO
+     * @param authenticationRequest
      * @return
      */
     @Override
-    public boolean checkUser(LoginDto loginDTO) {
-        UserDao userDao = userRepository.findByEmail(loginDTO.email).orElseThrow(() -> new LMSException(LMSException.exceptionType
-                .INVALID_EMAIL_ID, "User not found with email"));
-        if (loginDTO.password.matches(userDao.getPassword()))
-            return true;
-        throw new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found");
+    public String getToken(AuthenticationRequest authenticationRequest) {
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
+                    authenticationRequest.getPassword()));
+        } catch (LMSException e) {
+            throw new LMSException(LMSException.exceptionType.INVALID_PASSWORD, e.getMessage());
+        }
+        final UserDetails userDetails = loadUserByUsername(authenticationRequest.getUsername());
+        final String jwt = util.generateToken(userDetails);
+        redisTemplate.opsForHash().put(rediskey, authenticationRequest.getUsername(), jwt);
+        return jwt;
     }
-
 }
