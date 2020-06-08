@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 @RestController
@@ -68,7 +69,7 @@ public class HiredCandidateController {
      */
     @PostMapping(value = "/sendmail")
     @ResponseStatus(HttpStatus.GONE)
-    public ResponseEntity<ResponseDto> sendMail(@RequestBody HiredCandidateDto hiredCandidateDto) {
+    public ResponseEntity<ResponseDto> sendMail(@RequestBody HiredCandidateDto hiredCandidateDto) throws MessagingException {
         return new ResponseEntity<>(new ResponseDto(service.sendMail(hiredCandidateDto), ApplicationConfig
                 .getMessageAccessor().getMessage("104")),HttpStatus.GONE);
     }
