@@ -77,15 +77,15 @@ public class HiredCandidateController {
     /**
      * API to update candidate status
      *
-     * @param hiredCandidateDto
+     * @param email
      * @param choice
      * @return
      */
     @PutMapping(value = "/onboardstatus")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity<String> onBoardStatus(@RequestBody HiredCandidateDto hiredCandidateDto,
+    public ResponseEntity<String> onBoardStatus(@RequestParam(value = "email") String email,
                                                 @RequestParam(value = "choice") String choice) {
-        service.getOnboardStatus(hiredCandidateDto, choice);
+        service.getOnboardStatus(email, choice);
         return new ResponseEntity<>("Updated Status successfully", HttpStatus.ACCEPTED);
     }
 

@@ -21,7 +21,7 @@ public interface HiredCandidateService {
 
     String sendMail(HiredCandidateDto hiredCandidateDto) throws MessagingException;
 
-    HiredCandidateDao getOnboardStatus(HiredCandidateDto hiredCandidateDto, String choice);
+    HiredCandidateDao getOnboardStatus(String hiredCandidateDto, String choice);
 
     String sendJobOffer(HiredCandidateDto hiredCandidateDto);
 

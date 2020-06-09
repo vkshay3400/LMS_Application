@@ -18,7 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -29,10 +32,19 @@ import java.util.List;
 public class HiredCandidateServiceImpl implements HiredCandidateService {
 
     @Autowired
-    HiredCandidateDto hiredCandidateDTO;
+    private RabbitMq rabbitMq;
+
+    @Autowired
+    private MailDto mailDto;
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private SpringTemplateEngine templateEngine;
+
+    @Autowired
+    HiredCandidateDto hiredCandidateDTO;
 
     @Autowired
     private HiredCandidateRepository hiredCandidateRepository;
@@ -48,12 +60,6 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
 
     @Value("${choice.pending}")
     private String pending;
-
-    @Autowired
-    private RabbitMq rabbitMq;
-
-    @Autowired
-    private MailDto mailDto;
 
     /**
      * Method to get details from excel sheet
@@ -151,17 +157,18 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
      * @return
      */
     @Override
-    public String sendMail(HiredCandidateDto hiredCandidateDto) {
-
-        String Accepted = "<html><body><p><a href='http://localhost:8080/hiredcandidate/updatestatus?response=ACCEPTED&email=" + hiredCandidateDto.getEmail();
-        String Rejected = "<html><body><p><a href='http://localhost:8080/hiredcandidate/updatestatus?response=REJECTED&email=" + hiredCandidateDto.getEmail();
+    public String sendMail(HiredCandidateDto hiredCandidateDto) throws MessagingException {
         mailDto.setTo(hiredCandidateDto.getEmail());
-        mailDto.setBody("Hii, " + hiredCandidateDto.getFirstName() + " " + hiredCandidateDto.getLastName() + " " +
-                "You have been selected to our Fellowship Program. please click on the following " +
-                "link to accept the offer. " + "\n" + Accepted + "\nPlease click on following link to reject the offer. " + "\n" + Rejected);
         mailDto.setSubject("Regarding your choice for joining");
         mailDto.setFrom("${gmail.username}");
-        rabbitMq.sendMail(mailDto);
+        final Context ctx = new Context();
+        ctx.setVariable("name", hiredCandidateDto.getFirstName());
+        ctx.setVariable("acceptLink", "http://localhost:8080/hired/onboardstatus?email="
+                + hiredCandidateDto.getEmail() + "" + "&choice=Accept");
+        ctx.setVariable("rejectLink", "http://localhost:8080/hired/onboardstatus?email="
+                + hiredCandidateDto.getEmail() + "" + "&choice=Reject");
+        String html = templateEngine.process("Button", ctx);
+        rabbitMq.sendMail(html,mailDto);
         return new String(ApplicationConfig.getMessageAccessor().getMessage("104"));
     }
 
@@ -193,13 +200,13 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
     /**
      * Method to change onboard status
      *
-     * @param hiredCandidateDto
+     * @param email
      * @param choice
      * @return
      */
     @Override
-    public HiredCandidateDao getOnboardStatus(HiredCandidateDto hiredCandidateDto, String choice) {
-        HiredCandidateDao hiredCandidateDao = hiredCandidateRepository.findById(hiredCandidateDto.getId())
+    public HiredCandidateDao getOnboardStatus(String email, String choice) {
+        HiredCandidateDao hiredCandidateDao = hiredCandidateRepository.findByEmail(email)
                 .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
         switch (choice) {
             case "accept":
