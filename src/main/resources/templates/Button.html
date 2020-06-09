@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        .button {
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        .button1 {background-color: #228B22;} /* Forest Green */
+        .button2 {background-color: #FF0000;} /* Red */
+    </style>
+</head>
+<body>
+<h1>Fellowship program choice:</h1>
+<p>Hi <span th:text="${name}"></span>,</br> you have been selected to our Fellowship Program. Please click on the
+    following link and choose your choice.</p>
+<p>Your choice:</p>
+<div>
+    <a th:href="@{${acceptLink}}">
+        <button>
+            <input type="button" class="button1" value="Accept">
+        </button>
+    </a>
+    <a th:href="@{${rejectLink}}">
+        <button>
+            <input type="button" class="button2" value="Reject">
+        </button>
+    </a>
+</div>
+</body>
+</html>
