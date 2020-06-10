@@ -12,6 +12,6 @@ public class LMSException extends RuntimeException{
     }
 
     public enum exceptionType {
-        USER_NOT_FOUND, INVALID_PASSWORD, INVALID_ID, INVALID_EMAIL_ID, DATA_NOT_FOUND;
+        USER_NOT_FOUND, INVALID_PASSWORD, INVALID_ID, INVALID_EMAIL_ID, DATA_NOT_FOUND, INVALID_TOKEN;
     }
 }
