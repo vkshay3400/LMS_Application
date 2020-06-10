@@ -1,38 +1,41 @@
 package com.bridgelabz.lmsapi.configuration;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMqConfig {
 
-    @Value("${spring.rabbitmq.template.exchange}")
-    private String exchangeName;
-
-    @Value("${spring.rabbitmq.template.default-receive-queue}")
-    private String queueName;
-
-    @Value("${spring.rabbitmq.template.routing-key}")
-    private String routingKey;
-
     @Bean
     Queue queue() {
-        return new Queue(queueName);
+        return new Queue(System.getenv().get("spring.rabbitmq.template.default-receive-queue"));
     }
 
     @Bean
     DirectExchange exchange() {
-        return new DirectExchange(exchangeName);
+        return new DirectExchange(System.getenv().get("spring.rabbitmq.template.exchange"));
     }
 
     @Bean
     Binding binding(Queue queue, DirectExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(routingKey);
+        return BindingBuilder.bind(queue).to(exchange).with(System.getenv().get("spring.rabbitmq.template.routing-key"));
+    }
+
+    @Bean
+    public MessageConverter jsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
+    }
+
+    @Bean
+    public AmqpTemplate rabbitMq(ConnectionFactory connectionFactory) {
+        final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(jsonMessageConverter());
+        return rabbitTemplate;
     }
 
 }
