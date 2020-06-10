@@ -11,6 +11,7 @@ import com.bridgelabz.lmsapi.util.JwtUtil;
 import com.bridgelabz.lmsapi.util.RabbitMq;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,28 +25,29 @@ import java.util.ArrayList;
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
-    private final String rediskey = "Key";
-
-    @Autowired
-    private ModelMapper modelMapper;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private UserRepository userRepository;
-
     @Autowired
     private JwtUtil util;
 
     @Autowired
-    private RedisTemplate<String, UserDao> redisTemplate;
+    private MailDto mailDto;
 
     @Autowired
     private RabbitMq rabbitMq;
 
     @Autowired
-    private MailDto mailDto;
+    private ModelMapper modelMapper;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private RedisTemplate<String, UserDao> redisTemplate;
+
+    @Value("redis.key")
+    private String keys;
 
     /**
      * Method to load user by name
@@ -109,7 +111,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     "token: " + util.getToken(user.getId()));
             mailDto.setSubject("Regarding reset password");
             mailDto.setFrom("${gmail.username}");
-            rabbitMq.sendMail(mailDto);
+            rabbitMq.sendMessageToQueue(mailDto);
             return ApplicationConfig.getMessageAccessor().getMessage("104");
         } catch (LMSException e) {
             throw new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, e.getMessage());
@@ -132,7 +134,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
         final UserDetails userDetails = loadUserByUsername(authenticationRequest.getUsername());
         final String jwt = util.generateToken(userDetails);
-        redisTemplate.opsForHash().put(rediskey, authenticationRequest.getUsername(), jwt);
+        redisTemplate.opsForHash().put(keys, authenticationRequest.getUsername(), jwt);
         return jwt;
     }
 }

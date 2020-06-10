@@ -32,19 +32,19 @@ import java.util.List;
 public class HiredCandidateServiceImpl implements HiredCandidateService {
 
     @Autowired
-    private RabbitMq rabbitMq;
+    private MailDto mailDto;
 
     @Autowired
-    private MailDto mailDto;
+    private RabbitMq rabbitMq;
 
     @Autowired
     private ModelMapper modelMapper;
 
     @Autowired
-    private SpringTemplateEngine templateEngine;
+    HiredCandidateDto hiredCandidateDTO;
 
     @Autowired
-    HiredCandidateDto hiredCandidateDTO;
+    private SpringTemplateEngine templateEngine;
 
     @Autowired
     private HiredCandidateRepository hiredCandidateRepository;
@@ -52,14 +52,14 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
     @Autowired
     private FellowshipCandidateRepository fellowshipCandidateRepository;
 
-    @Value("${choice.accept}")
-    private String accept;
+    @Value("${choice.Accept}")
+    private String Accept;
 
-    @Value("${choice.reject}")
-    private String reject;
+    @Value("${choice.Reject}")
+    private String Reject;
 
-    @Value("${choice.pending}")
-    private String pending;
+    @Value("${choice.Pending}")
+    private String Pending;
 
     /**
      * Method to get details from excel sheet
@@ -155,6 +155,7 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
      *
      * @param hiredCandidateDto
      * @return
+     * @throws MessagingException
      */
     @Override
     public String sendMail(HiredCandidateDto hiredCandidateDto) throws MessagingException {
@@ -167,8 +168,9 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
                 + hiredCandidateDto.getEmail() + "" + "&choice=Accept");
         ctx.setVariable("rejectLink", "http://localhost:8080/hired/onboardstatus?email="
                 + hiredCandidateDto.getEmail() + "" + "&choice=Reject");
-        String html = templateEngine.process("Button", ctx);
-        rabbitMq.sendMail(html,mailDto);
+        String context = templateEngine.process("button", ctx);
+        mailDto.setBody(context);
+        rabbitMq.sendMessageToQueue(mailDto);
         return new String(ApplicationConfig.getMessageAccessor().getMessage("104"));
     }
 
@@ -209,15 +211,15 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
         HiredCandidateDao hiredCandidateDao = hiredCandidateRepository.findByEmail(email)
                 .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
         switch (choice) {
-            case "accept":
-                hiredCandidateDao.setStatus(accept);
+            case "Accept":
+                hiredCandidateDao.setStatus(Accept);
                 hiredCandidateRepository.save(hiredCandidateDao);
                 break;
-            case "reject":
-                hiredCandidateDao.setStatus(reject);
+            case "Reject":
+                hiredCandidateDao.setStatus(Reject);
                 break;
             default:
-                hiredCandidateDao.setStatus(pending);
+                hiredCandidateDao.setStatus(Pending);
                 break;
         }
         return hiredCandidateRepository.save(hiredCandidateDao);
@@ -233,7 +235,7 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
     public String sendJobOffer(HiredCandidateDto hiredCandidateDto) {
         HiredCandidateDao hiredCandidateDao = hiredCandidateRepository.findById(hiredCandidateDto.getId())
                 .orElseThrow(() -> new LMSException(LMSException.exceptionType.DATA_NOT_FOUND, "Data not found"));
-        if (hiredCandidateDao.getStatus().matches(accept)) {
+        if (hiredCandidateDao.getStatus().matches(Accept)) {
             hiredCandidateDao = hiredCandidateRepository.findByEmail(hiredCandidateDto.getEmail())
                     .orElseThrow(() -> new LMSException(LMSException.exceptionType.USER_NOT_FOUND, "User not found"));
             mailDto.setTo(hiredCandidateDto.getEmail());
@@ -241,7 +243,7 @@ public class HiredCandidateServiceImpl implements HiredCandidateService {
                     "You are selected for the fellowship program... ");
             mailDto.setSubject("Regarding your job offer");
             mailDto.setFrom("${gmail.username}");
-            rabbitMq.sendMail(mailDto);
+            rabbitMq.sendMessageToQueue(mailDto);
 
             // To save data in fellowship database table
             FellowshipDao fellowshipDao = new FellowshipDao();
