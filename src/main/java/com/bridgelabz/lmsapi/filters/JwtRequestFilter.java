@@ -23,7 +23,6 @@ import java.io.IOException;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-//    private final String key = "Key";
 
     @Value("redis.key")
     private String keys;
