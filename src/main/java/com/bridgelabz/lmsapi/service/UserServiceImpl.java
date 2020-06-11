@@ -10,6 +10,8 @@ import com.bridgelabz.lmsapi.repository.UserRepository;
 import com.bridgelabz.lmsapi.util.JwtUtil;
 import com.bridgelabz.lmsapi.util.RabbitMq;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,6 +26,8 @@ import java.util.ArrayList;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private JwtUtil util;
