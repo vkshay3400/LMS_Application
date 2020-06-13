@@ -1,6 +1,5 @@
 package com.bridgelabz.lmsapi.configuration;
 
-import org.apache.commons.lang3.time.StopWatch;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -8,6 +7,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StopWatch;
 
 @Aspect
 @Configuration
@@ -35,7 +35,8 @@ public class AopConfig {
         stopWatch.stop();
 
         //Log method execution details
-        logger.info("Execution details " + className + "." + methodName + " " + ":: " + result + stopWatch.getTime());
+        logger.info("Execution details " + className + "." + methodName + " " + ":: " + result +
+                + stopWatch.getTotalTimeMillis() + " ms");
         return result;
     }
 
@@ -49,4 +50,5 @@ public class AopConfig {
     public void afterReturning(JoinPoint joinPoint, Object result) {
         logger.info("{} returned with value {}", joinPoint, result);
     }
+
 }
