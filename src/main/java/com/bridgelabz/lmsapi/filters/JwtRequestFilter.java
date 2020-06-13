@@ -1,7 +1,6 @@
 package com.bridgelabz.lmsapi.filters;
 
 import com.bridgelabz.lmsapi.exception.LMSException;
-import com.bridgelabz.lmsapi.model.UserDao;
 import com.bridgelabz.lmsapi.service.UserServiceImpl;
 import com.bridgelabz.lmsapi.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -24,7 +23,7 @@ import java.io.IOException;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    @Value("redis.key")
+    @Value("spring.redis.key")
     private String keys;
 
     @Autowired
@@ -34,7 +33,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private RedisTemplate<String, UserDao> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
