@@ -1,24 +1,25 @@
 package com.bridgelabz.lmsapi.configuration;
 
-import com.bridgelabz.lmsapi.model.UserDao;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-@EnableCaching
+@EnableRedisRepositories
 public class RedisConfig {
 
-    @Value("${redis.host}")
+    @Value("${spring.redis.host}")
     private String redisHostName;
 
-    @Value("${redis.port}")
+    @Value("${spring.redis.port}")
     private int redisPort;
 
-    @Value("${redis.password}")
+    @Value("${spring.redis.password}")
     private String redisPassword;
 
     @Bean
@@ -27,13 +28,17 @@ public class RedisConfig {
         connectionFactory.setHostName(redisHostName);
         connectionFactory.setPort(redisPort);
         connectionFactory.setPassword(redisPassword);
+        connectionFactory.setUsePool(true);
         return connectionFactory;
     }
 
     @Bean
-    RedisTemplate<String, UserDao> redisTemplate() {
-        RedisTemplate<String, UserDao> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(connectionFactory());
-        return redisTemplate;
+    RedisTemplate<String, Object> redisTemplate() {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory());
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+        return template;
     }
 }
