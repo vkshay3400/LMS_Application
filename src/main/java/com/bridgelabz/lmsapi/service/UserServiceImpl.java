@@ -9,12 +9,11 @@ import com.bridgelabz.lmsapi.model.UserDao;
 import com.bridgelabz.lmsapi.repository.UserRepository;
 import com.bridgelabz.lmsapi.util.JwtUtil;
 import com.bridgelabz.lmsapi.util.RabbitMq;
+import com.bridgelabz.lmsapi.util.RedisUtil;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,10 +26,11 @@ import java.util.ArrayList;
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
     @Autowired
     private JwtUtil util;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Autowired
     private MailDto mailDto;
@@ -47,10 +47,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private RedisTemplate<String, UserDao> redisTemplate;
-
-    @Value("redis.key")
+    @Value("spring.redis.key")
     private String keys;
 
     /**
@@ -138,7 +135,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
         final UserDetails userDetails = loadUserByUsername(authenticationRequest.getUsername());
         final String jwt = util.generateToken(userDetails);
-        redisTemplate.opsForHash().put(keys, authenticationRequest.getUsername(), jwt);
+        redisUtil.save(keys, authenticationRequest.getUsername(), jwt);
         return jwt;
     }
 }
