@@ -9,7 +9,7 @@ import com.bridgelabz.lmsapi.model.UserDao;
 import com.bridgelabz.lmsapi.repository.UserRepository;
 import com.bridgelabz.lmsapi.util.JwtUtil;
 import com.bridgelabz.lmsapi.util.RabbitMq;
-import com.bridgelabz.lmsapi.util.RedisUtil;
+import com.bridgelabz.lmsapi.util.Redis;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private JwtUtil util;
 
     @Autowired
-    private RedisUtil redisUtil;
+    private Redis redisUtil;
 
     @Autowired
     private MailDto mailDto;
