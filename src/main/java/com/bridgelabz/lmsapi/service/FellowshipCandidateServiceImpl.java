@@ -68,7 +68,7 @@ public class FellowshipCandidateServiceImpl implements FellowshipCandidateServic
         } catch (LMSException e) {
             throw new LMSException(LMSException.exceptionType.INVALID_ID, e.getMessage());
         }
-        return false;
+        return true;
     }
 
     /**
@@ -112,7 +112,7 @@ public class FellowshipCandidateServiceImpl implements FellowshipCandidateServic
         } catch (LMSException e) {
             throw new LMSException(LMSException.exceptionType.INVALID_ID, e.getMessage());
         }
-        return false;
+        return true;
     }
 
     /**
@@ -168,7 +168,7 @@ public class FellowshipCandidateServiceImpl implements FellowshipCandidateServic
         fout.write(file.getBytes());
 
         fout.close();
-        return false;
+        return true;
     }
 
     /**

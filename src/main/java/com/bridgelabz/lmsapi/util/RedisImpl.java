@@ -17,4 +17,8 @@ public class RedisUtil implements Serializable {
     public void save(String RedisKey, String email, String authenticationToken) {
         redisTemplate.opsForHash().put(RedisKey, email, authenticationToken);
     }
+
+    public Object getRedisToken(String redisKey, String userName) {
+        return redisTemplate.opsForHash().get(redisKey, userName);
+    }
 }
